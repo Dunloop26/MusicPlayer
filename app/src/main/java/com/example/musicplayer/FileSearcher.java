@@ -1,16 +1,24 @@
 package com.example.musicplayer;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
 public class FileSearcher {
 
-    private String rootPath;
-    private ArrayList<File> listSongs;
-    private String extension;
+    private String _rootPath;
+    private ArrayList<File> _songList;
+    private String _extension;
+    private Context _context;
+    private ArrayList<String> _ignorePaths;
 
 
     //TODO: Leer rutas y valores para ignorar
@@ -18,10 +26,13 @@ public class FileSearcher {
     /**
      * @param extension referencia a la extension del archivo
      */
-    public FileSearcher(String extension) {
-        listSongs = new ArrayList<>();
-        rootPath = Environment.getExternalStorageDirectory().toString();
-        this.extension = addDot(extension);
+    public FileSearcher(String extension, Context context) {
+        _songList = new ArrayList<>();
+        _rootPath = Environment.getExternalStorageDirectory().toString();
+        _extension = addDot(extension);
+        _context = context;
+        _ignorePaths = new ArrayList<>();
+        readFile();
     }
 
     private int getExtensionLength(String extension) {
@@ -29,7 +40,6 @@ public class FileSearcher {
     }
 
     public void listSongs(String path) {
-        //Log.d("Path", path);
         File rootDirectory = new File(path);
         if (!rootDirectory.exists()) {
             Log.d("Error0", "FATAL ERROR!");
@@ -53,25 +63,35 @@ public class FileSearcher {
             }
 
             if (currentFile.isDirectory()) {
-                listSongs(path + "/" + currentFile.getName());
+                boolean ignore = false;
+                String nextPath = path + "/" + currentFile.getName();
+                for(int j= 0; j < _ignorePaths.size() && !ignore; j++)
+                {
+                    if(nextPath.startsWith(_ignorePaths.get(j)))
+                    {
+                        Log.d("IGNOREFILE", nextPath);
+                        ignore = true;
+                    }
+                }
+                if (!ignore)
+                {
+                    listSongs(nextPath);
+                }
             } else {
 
-                int extensionLength = getExtensionLength(extension);
+                int extensionLength = getExtensionLength(_extension);
                 if (currentFile.getName().length() >= extensionLength + 1) {
 
                     String currentFileExtension = getExtensionFromFileName(currentFile.getName());
                     if (currentFileExtension == null) return;
                     //Log.d("Test", "Extension " + currentFileExtension);
-                    if (currentFileExtension.equals(extension)) {
-                        listSongs.add(currentFile);
+                    if (currentFileExtension.equals(_extension)) {
+                        _songList.add(currentFile);
                     }
                 }
             }
 
         }
-
-        testPrint();
-
     }
 
     public String getExtensionFromFileName(String filename) {
@@ -92,22 +112,22 @@ public class FileSearcher {
 
 
     public void setExtension(String extension) {
-        this.extension = addDot(extension);
+        _extension = addDot(extension);
     }
 
     public String getExtension() {
-        return this.extension;
+        return _extension;
     }
 
-    private void testPrint() {
-        for (int i = 0; i < listSongs.size(); i++) {
-            File currentSong = listSongs.get(i);
+    public void testPrint() {
+        for (int i = 0; i < _songList.size(); i++) {
+            File currentSong = _songList.get(i);
             Log.d("Song", "Name: " + currentSong.getName() + ", Path: " + currentSong.getAbsolutePath());
         }
     }
 
     public String getRootPath() {
-        return rootPath;
+        return _rootPath;
     }
 
     private String addDot(String extension) {
@@ -119,4 +139,22 @@ public class FileSearcher {
         return extension;
     }
 
+
+    public void readFile()
+    {
+        InputStream inputStream = _context.getResources().openRawResource(R.raw.ignore);
+        try {
+
+            Reader in = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(in);
+            String line;
+            while ((line = br.readLine()) != null) {
+                _ignorePaths.add(line);
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
