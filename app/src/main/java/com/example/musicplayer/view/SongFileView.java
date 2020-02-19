@@ -1,5 +1,6 @@
 package com.example.musicplayer.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -7,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -14,17 +16,37 @@ import androidx.annotation.Nullable;
 
 import com.example.musicplayer.R;
 
+import java.io.File;
+
 public class SongFileView extends View {
+
+    private Context _context;
 
     private float _fileDisplayTextSize = 0f;
     private String _fileDisplayName;
 
+    private File _referenceFile;
+
     private Paint _painter;
     private Rect _drawingRect;
 
+    public SongFileView(Context context)
+    {
+        super(context);
+        _context = context;
+        init(null);
+    }
+
     public SongFileView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        _context = context;
+        init(attrs);
+    }
+
+    private void init(@Nullable AttributeSet attrs) {
+        // Inicializo las variables
+        _painter = new Paint(Paint.ANTI_ALIAS_FLAG);
+        _drawingRect = new Rect();
 
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
 
@@ -34,29 +56,42 @@ public class SongFileView extends View {
         } finally {
             typedArray.recycle();
         }
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity) _context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        int width = (int)java.lang.Math.round(metrics.widthPixels * 0.8);
+        int height = width / 3;
+
+        setMinimumWidth(100);
+        setMinimumHeight(200);
     }
 
-    private void init() {
-        // Inicializo las variables
-        _painter = new Paint(Paint.ANTI_ALIAS_FLAG);
-        _drawingRect = new Rect();
-    }
-
-    private void resolveTextSize()
-    {
-        if(_fileDisplayTextSize == 0){
+    private void resolveTextSize() {
+        if (_fileDisplayTextSize == 0) {
             _fileDisplayTextSize = _painter.getTextSize();
-        }else{
+        } else {
             _painter.setTextSize(_fileDisplayTextSize);
         }
     }
 
-    private void setFileDisplayName(String displayName) {
+    public void setReferenceFile(File file) {_referenceFile = file;}
+    public File getReferenceFile() {return _referenceFile;}
+
+    public void setFileDisplayName(String displayName) {
         _fileDisplayName = displayName;
     }
 
-    private String getFileDisplayName() {
+    public String getFileDisplayName() {
         return _fileDisplayName;
+    }
+
+    public void setFileDisplayTextSize(float size) {
+        _fileDisplayTextSize = size < 0 ? 0 : size;
+    }
+
+    public float getFileDisplayTextSize() {
+        return _fileDisplayTextSize;
     }
 
     @Override
@@ -76,7 +111,7 @@ public class SongFileView extends View {
 
         _painter.setColor(Color.WHITE);
         _painter.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(_fileDisplayName, width /2,height/2, _painter);
+        canvas.drawText(_fileDisplayName, width / 2, height / 2, _painter);
 
         Log.d("OnDraw", "called!");
     }
