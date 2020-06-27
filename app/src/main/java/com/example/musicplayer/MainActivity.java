@@ -7,10 +7,12 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.media.MediaPlayer;
 
 import com.example.musicplayer.views.SongFileView;
 
@@ -48,7 +50,13 @@ public class MainActivity extends AppCompatActivity {
         File[] files = fileSearcher.getFiles();
         fileSearcher.printFileUtil(files);
 
-        createFileView(files);
+        songWrapper.play("/storage/emulated/0/Music/Deezloader Music/Imagine Dragons - Believer.mp3");
+//        FileSearcher fileSearcher = new FileSearcher(".mp3", this);
+//        fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
+//        File[] files = fileSearcher.getFiles();
+//        fileSearcher.printFileUtil(files);
+//
+//        createFileView(files);
     }
 
     private void createFileView(File[] files) {

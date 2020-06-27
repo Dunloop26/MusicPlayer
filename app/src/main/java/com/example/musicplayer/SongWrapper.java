@@ -21,28 +21,30 @@ public class SongWrapper {
             _player.setOnErrorListener(new OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    return OnMediaPlayerErrorListener(mp, what, extra);
+                    return onMediaPlayerErrorListener(mp, what, extra);
                 }
             });
             _player.setOnPreparedListener(new OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    OnPrepareAsyncMediaPlayer(mp);
+                    onPrepareAsyncMediaPlayer(mp);
                 }
             });
-        } else
+        } else {
+
             // Reseteo el player, para definir la
             _player.reset();
+        }
 
         return _player;
     }
 
-    private boolean OnMediaPlayerErrorListener(MediaPlayer mp, int what, int extra) {
+    private boolean onMediaPlayerErrorListener(MediaPlayer mp, int what, int extra) {
         Log.e("SongWrapper: ", String.format("An error has ocurred: MediaPlayer %s %s %s", mp, what, extra));
         return true;
     }
 
-    private void OnPrepareAsyncMediaPlayer(MediaPlayer player) {
+    private void onPrepareAsyncMediaPlayer(MediaPlayer player) {
 
         // Si se prepara para reproducir la canción
         if (_prepareForPlay) {
@@ -53,12 +55,15 @@ public class SongWrapper {
         }
     }
 
-    public void Play(File songFile) {
+    public void play(File songFile) {
         // Si la no canción existe
-        if (!songFile.exists()) return;
 
+        if (!songFile.exists()) return;
         // Obtengo el reproductor
         _player = getMediaPlayer();
+
+        // Si está reproduciendo una canción la detengo
+        if (_player.isPlaying()) _player.stop();
 
         // Trato de obtener el archivo a reproducir
         try {
@@ -73,13 +78,13 @@ public class SongWrapper {
 
     }
 
-    public void Play(String filepath) {
+    public void play(String filepath) {
         // Uso el mismo método, para evitar repetir código
         File songFile = new File(filepath);
-        Play(songFile);
+        play(songFile);
     }
 
-    public void Stop() {
+    public void stop() {
         _player.stop();
     }
 }
