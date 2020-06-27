@@ -3,5 +3,7 @@
     <declare-styleable name="SongFileView">
         <attr name="fileDisplayName" format="string"/>
         <attr name="fileDisplayTextSize" format="float"/>
+        <attr name="backgroundDisplayColor" format="color"/>
+        <attr name="fontDisplayColor" format="color"/>
     </declare-styleable>
 </resources>

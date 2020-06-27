@@ -1,4 +1,4 @@
-package com.example.musicplayer.view;
+package com.example.musicplayer.views;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.musicplayer.R;
 
@@ -24,6 +25,8 @@ public class SongFileView extends View {
 
     private float _fileDisplayTextSize = 0f;
     private String _fileDisplayName;
+    private int _backgroundDisplayColor;
+    private int _fontDisplayColor;
 
     private File _referenceFile;
 
@@ -52,16 +55,14 @@ public class SongFileView extends View {
 
         try {
             _fileDisplayName = typedArray.getString(R.styleable.SongFileView_fileDisplayName);
+            if(_fileDisplayName == null) _fileDisplayName = "FileName";
             _fileDisplayTextSize = typedArray.getFloat(R.styleable.SongFileView_fileDisplayTextSize, 0f);
+            _backgroundDisplayColor = typedArray.getColor(R.styleable.SongFileView_backgroundDisplayColor, Color.WHITE);
+            _fontDisplayColor = typedArray.getColor(R.styleable.SongFileView_fontDisplayColor, Color.BLACK);
+
         } finally {
             typedArray.recycle();
         }
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        ((Activity) _context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        int width = (int)java.lang.Math.round(metrics.widthPixels * 0.8);
-        int height = width / 3;
 
         setMinimumWidth(100);
         setMinimumHeight(200);
@@ -98,8 +99,7 @@ public class SongFileView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        int color = getResources().getColor(R.color.colorAccent);
-        _painter.setColor(color);
+        _painter.setColor(_backgroundDisplayColor);
 
         float width = getMeasuredWidth();
         float height = getMeasuredHeight();
@@ -109,15 +109,8 @@ public class SongFileView extends View {
 
         resolveTextSize();
 
-        _painter.setColor(Color.WHITE);
+        _painter.setColor(_fontDisplayColor);
         _painter.setTextAlign(Paint.Align.CENTER);
         canvas.drawText(_fileDisplayName, width / 2, height / 2, _painter);
-
-        Log.d("OnDraw", "called!");
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }
