@@ -2,8 +2,12 @@
 <resources>
     <declare-styleable name="SongFileView">
         <attr name="fileDisplayName" format="string"/>
-        <attr name="fileDisplayTextSize" format="float"/>
+        <attr name="nameTextSize" format="float"/>
         <attr name="backgroundDisplayColor" format="color"/>
         <attr name="fontDisplayColor" format="color"/>
+        <attr name="fileDisplayArtistName" format="string"/>
+        <attr name="artistAlbumNameTextSize" format="float"/>
+        <attr name="fileDisplayAlbumName" format="string"/>
+        <attr name="imageMargin" format="float" />
     </declare-styleable>
 </resources>

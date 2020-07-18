@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 debugFileSearcher();
             }
         });
-        _songWrapper = new SongWrapper();
+//        _songWrapper = new SongWrapper();
 
     }
 
@@ -50,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
         File[] files = fileSearcher.getFiles();
         fileSearcher.printFileUtil(files);
 
-        songWrapper.play("/storage/emulated/0/Music/Deezloader Music/Imagine Dragons - Believer.mp3");
+        //songWrapper.play("/storage/emulated/0/Music/Deezloader Music/Imagine Dragons - Believer.mp3");
 //        FileSearcher fileSearcher = new FileSearcher(".mp3", this);
 //        fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
 //        File[] files = fileSearcher.getFiles();
 //        fileSearcher.printFileUtil(files);
 //
-//        createFileView(files);
+        createFileView(files);
     }
 
     private void createFileView(File[] files) {
@@ -73,18 +74,19 @@ public class MainActivity extends AppCompatActivity {
 
             SongFileView view = new SongFileView(this);
             view.setFileDisplayName(currentFile.getName());
-            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+//            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
             view.setReferenceFile(currentFile);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (v.getClass() == SongFileView.class) {
-                        songClickListener((SongFileView) v);
-                    }
-                }
-            });
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (v.getClass() == SongFileView.class) {
+//                        songClickListener((SongFileView) v);
+//                    }
+//                }
+//            });
 
+            Log.d("ViewTest:",  "index: " + fileIndex + ", null? " + (view==null));
             _fileViewContainer.addView(view);
         }
     }
@@ -92,6 +94,6 @@ public class MainActivity extends AppCompatActivity {
     private void songClickListener(SongFileView songFileView) {
         if (_songWrapper == null) return;
 
-        _songWrapper.Play(songFileView.getReferenceFile());
+        _songWrapper.play(songFileView.getReferenceFile());
     }
 }
