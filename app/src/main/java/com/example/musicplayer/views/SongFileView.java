@@ -62,21 +62,21 @@ public class SongFileView extends View {
 		_painter = new Paint(Paint.ANTI_ALIAS_FLAG);
 		_drawingRect = new Rect();
 
-//		_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
-//
-//		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//			@Override
-//			public void onGlobalLayout() {
-//				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-//					getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//				else
-//					getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//
-//				int imageSize = getHeight() - ((int) (_imageMargin * 2));
-//				_image = getResizeBitMap(_image, imageSize, imageSize);
-//			}
-//
-//		});
+		_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
+
+		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+					getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				else
+					getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+				int imageSize = getHeight() - ((int) (_imageMargin * 2));
+				_image = getResizeBitMap(_image, imageSize, imageSize);
+			}
+
+		});
 
 		if(attrs == null) return;
 
@@ -142,34 +142,22 @@ public class SongFileView extends View {
 		super.onDraw(canvas);
 
 		_painter.setColor(_backgroundDisplayColor);
-//		int height = _image.getHeight();
+		int height = _image.getHeight();
 
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
 
 		_painter.setColor(_fontDisplayColor);
-//		_painter.setTextAlign(Paint.Align.LEFT);
-//		_painter.setTextSize(_nameTextSize);
-//		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
-//		canvas.drawText(_fileDisplayName, _image.getWidth() + ((int) (_imageMargin * 2)),
-//				((height / 4f) + _imageMargin) + (_image.getHeight() * 0.1f),
-//				_painter);
-//		_painter.setTextSize(_artistAlbumNameTextSize);
-//		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
-//				_image.getWidth() + ((int) (_imageMargin * 2)),
-//				(((height / 4f) + (height / 2f)) + _imageMargin) + (_image.getHeight() * 0.1f),
-//				_painter);
-
-
-
-//		int height = getHeight();
-//		canvas.drawText(_fileDisplayName, getWidth() + ((int) (_imageMargin * 2)),
-//				((height / 4f) + _imageMargin) + (getHeight() * 0.1f),
-//				_painter);
-//		_painter.setTextSize(_artistAlbumNameTextSize);
-//		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
-//				getWidth() + ((int) (_imageMargin * 2)),
-//				(((height / 4f) + (height / 2f)) + _imageMargin) + (getHeight() * 0.1f),
-//				_painter);
+		_painter.setTextAlign(Paint.Align.LEFT);
+		_painter.setTextSize(_nameTextSize);
+		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
+		canvas.drawText(_fileDisplayName, _image.getWidth() + ((int) (_imageMargin * 2)),
+				((height / 4f) + _imageMargin) + (height * 0.1f),
+				_painter);
+		_painter.setTextSize(_artistAlbumNameTextSize);
+		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
+				_image.getWidth() + ((int) (_imageMargin * 2)),
+				(((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f),
+				_painter);
 	}
 }

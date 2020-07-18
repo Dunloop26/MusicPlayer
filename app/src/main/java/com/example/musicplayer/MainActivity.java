@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 debugFileSearcher();
             }
         });
-//        _songWrapper = new SongWrapper();
+        _songWrapper = new SongWrapper();
 
     }
 
@@ -74,17 +74,17 @@ public class MainActivity extends AppCompatActivity {
 
             SongFileView view = new SongFileView(this);
             view.setFileDisplayName(currentFile.getName());
-//            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+//          view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
             view.setReferenceFile(currentFile);
 
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (v.getClass() == SongFileView.class) {
-//                        songClickListener((SongFileView) v);
-//                    }
-//                }
-//            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (v.getClass() == SongFileView.class) {
+                        songClickListener((SongFileView) v);
+                    }
+                }
+            });
 
             Log.d("ViewTest:",  "index: " + fileIndex + ", null? " + (view==null));
             _fileViewContainer.addView(view);
