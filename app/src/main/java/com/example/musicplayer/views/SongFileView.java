@@ -103,8 +103,6 @@ public class SongFileView extends View {
 			typedArray.recycle();
 		}
 
-		setMinimumWidth(340);
-		setMinimumHeight(100);
 	}
 
 	private Bitmap getResizeBitMap(Bitmap bitmap, int reqWidth, int reqHeight) {
@@ -159,5 +157,12 @@ public class SongFileView extends View {
 				_image.getWidth() + ((int) (_imageMargin * 2)),
 				(((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f),
 				_painter);
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		setMinimumWidth(340);
+		setMinimumHeight(100);
 	}
 }

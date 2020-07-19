@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.media.MediaPlayer;
+import android.widget.TextView;
 
 import com.example.musicplayer.views.SongFileView;
 
@@ -65,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer = findViewById(R.id.songListContainer);
         }
 
-        int length = files.length;
+//        int length = files.length;
+        int length = 10;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -73,20 +75,20 @@ public class MainActivity extends AppCompatActivity {
             if (!currentFile.canRead()) continue;
 
             SongFileView view = new SongFileView(this);
-            view.setFileDisplayName(currentFile.getName());
-//          view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
-            view.setReferenceFile(currentFile);
+            view.setFileDisplayName("fileIndex");
+//            view.setFileDisplayName(currentFile.getName());
+//            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+//            view.setReferenceFile(currentFile);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (v.getClass() == SongFileView.class) {
-                        songClickListener((SongFileView) v);
-                    }
-                }
-            });
-
-            Log.d("ViewTest:",  "index: " + fileIndex + ", null? " + (view==null));
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (v.getClass() == SongFileView.class) {
+//                        songClickListener((SongFileView) v);
+//                    }
+//                }
+//            });
+            Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
             _fileViewContainer.addView(view);
         }
     }
