@@ -162,7 +162,6 @@ public class SongFileView extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		setMinimumWidth(340);
-		setMinimumHeight(100);
+		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 	}
 }

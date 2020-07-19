@@ -3,6 +3,7 @@ package com.example.musicplayer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -66,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer = findViewById(R.id.songListContainer);
         }
 
-//        int length = files.length;
-        int length = 10;
+        int length = files.length;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -76,18 +76,19 @@ public class MainActivity extends AppCompatActivity {
 
             SongFileView view = new SongFileView(this);
             view.setFileDisplayName("fileIndex");
-//            view.setFileDisplayName(currentFile.getName());
-//            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
-//            view.setReferenceFile(currentFile);
+            view.setFileDisplayName(currentFile.getName());
+            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+            view.setReferenceFile(currentFile);
 
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (v.getClass() == SongFileView.class) {
-//                        songClickListener((SongFileView) v);
-//                    }
-//                }
-//            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (v.getClass() == SongFileView.class) {
+                        songClickListener((SongFileView) v);
+                    }
+                }
+            });
+            view.setLayoutParams(new LinearLayout.LayoutParams(_fileViewContainer.getWidth() - 50, dpToPx(80, this)));
             Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
             _fileViewContainer.addView(view);
         }
@@ -97,5 +98,10 @@ public class MainActivity extends AppCompatActivity {
         if (_songWrapper == null) return;
 
         _songWrapper.play(songFileView.getReferenceFile());
+    }
+
+    public int dpToPx(int dp, Context context) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 }
