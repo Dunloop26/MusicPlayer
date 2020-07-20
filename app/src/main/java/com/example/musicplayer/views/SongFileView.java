@@ -62,21 +62,7 @@ public class SongFileView extends View {
 		_painter = new Paint(Paint.ANTI_ALIAS_FLAG);
 		_drawingRect = new Rect();
 
-		_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
-
-		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-					getViewTreeObserver().removeOnGlobalLayoutListener(this);
-				else
-					getViewTreeObserver().removeGlobalOnLayoutListener(this);
-				int imageSize = getMeasuredHeight() - ((int) (_imageMargin * 2));
-				_image = getResizeBitMap(_image, imageSize, imageSize);
-				Log.d("SONG_VIEW", String.format("Measured: %s,Total Image Size: %s", getMeasuredHeight(), imageSize));
-			}
-
-		});
+//		_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
 
 		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
 
@@ -100,8 +86,6 @@ public class SongFileView extends View {
 		} finally {
 			typedArray.recycle();
 		}
-
-		Log.d("SET_SIZE", "Set the minimum width and height");
 	}
 
 	private Bitmap getResizeBitMap(Bitmap bitmap, int reqWidth, int reqHeight) {
@@ -126,6 +110,12 @@ public class SongFileView extends View {
 	public void setFileDisplayName(String displayName) {
 		_fileDisplayName = displayName;
 	}
+
+	public void setFileDisplayArtistName(String artistName){ _fileDisplayArtistName = artistName;}
+
+	public void setFileDisplayAlbumName(String albumName){_fileDisplayAlbumName = albumName;}
+
+	public void setImage(Bitmap image) {_image = image;}
 
 	public String getFileDisplayName() {
 		return _fileDisplayName;
@@ -153,6 +143,7 @@ public class SongFileView extends View {
 		_painter.setTextAlign(Paint.Align.LEFT);
 		_painter.setTextSize(_nameTextSize);
 		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
+
 		canvas.drawText(_fileDisplayName, _image.getWidth() + ((int) (_imageMargin * 2)),
 				((height / 4f) + _imageMargin) + (height * 0.1f),
 				_painter);
@@ -161,9 +152,28 @@ public class SongFileView extends View {
 				_image.getWidth() + ((int) (_imageMargin * 2)),
 				(((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f),
 				_painter);
-//		Log.d("Hola1", "(" + getWidth() + " , " + getHeight() + "), Image: (" + _image.getWidth() + ", " + _image.getHeight() + ")");
-//		Log.d("Hola1", "x: " + (_image.getWidth() + ((int) (_imageMargin * 2))));
-//		Log.d("Hola1", "y: " + ((((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f)));
+	}
+
+	public void renderImage()
+	{
+
+		if(_image == null)
+		{
+			_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
+		}
+
+		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+					getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				else
+					getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				int imageSize = getMeasuredHeight() - ((int) (_imageMargin * 2));
+				_image = getResizeBitMap(_image, imageSize, imageSize);
+			}
+
+		});
 	}
 
 	@Override
@@ -171,4 +181,6 @@ public class SongFileView extends View {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 	}
+
+
 }

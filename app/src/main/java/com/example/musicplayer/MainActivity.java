@@ -75,10 +75,17 @@ public class MainActivity extends AppCompatActivity {
             if (currentFile == null) continue;
             if (!currentFile.canRead()) continue;
 
+            MetadataMp3 metadataMp3 = new MetadataMp3(currentFile);
+            metadataMp3.extractMetadata();
+
             SongFileView view = new SongFileView(this);
-            view.setFileDisplayName(currentFile.getName());
-            // view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+            view.setFileDisplayName(metadataMp3.getTitle());
+            view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
+            view.setFileDisplayArtistName(metadataMp3.getArtistName());
+            view.setImage(metadataMp3.getImage());
             view.setReferenceFile(currentFile);
+
+            view.renderImage();
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,12 +96,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+
+
             LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(80, this));
 //            layout.weight = 1;
 //            layout.setMargins(-100,100,0,100);
             view.setLayoutParams(layout);
-//            Log.d("Hola", _fileViewContainer.getWidth() + "");
-//            Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
             _fileViewContainer.addView(view);
         }
     }
