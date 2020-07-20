@@ -21,11 +21,8 @@ public class FileSearcher {
     private String _extension;
     private Context _context;
 
-
-    //TODO: Leer rutas y valores para ignorar
-
     /**
-     * @param extension referencia a la extension del archivo
+     * @param extension Referencia a la extension del archivo
      */
     public FileSearcher(String extension, Context context) {
         _extension = addDot(extension);

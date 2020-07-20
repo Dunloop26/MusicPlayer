@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int length = files.length;
-//        int length = 2;
+//        int length = 1;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -88,7 +88,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            view.setLayoutParams(new LinearLayout.LayoutParams(_fileViewContainer.getWidth() - 50, dpToPx(80, this)));
+
+            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(80, this));
+//            layout.weight = 1;
+//            layout.setMargins(-100,100,0,100);
+            view.setLayoutParams(layout);
 //            Log.d("Hola", _fileViewContainer.getWidth() + "");
 //            Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
             _fileViewContainer.addView(view);
