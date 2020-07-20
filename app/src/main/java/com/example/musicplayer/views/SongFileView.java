@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -35,7 +36,7 @@ public class SongFileView extends View {
 
 	private float _defaultNameTextSize = 40f;
 	private float _defaultArtistAlbumTextSize = 35f;
-	private float _imageMargin;
+	private float _imageMargin = 25f;
 
 	private File _referenceFile;
 
@@ -71,38 +72,42 @@ public class SongFileView extends View {
 					getViewTreeObserver().removeOnGlobalLayoutListener(this);
 				else
 					getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
 				int imageSize = getHeight() - ((int) (_imageMargin * 2));
 				_image = getResizeBitMap(_image, imageSize, imageSize);
 			}
 
 		});
 
-		if(attrs == null) return;
+		Log.d("SONG_VIEW", String.format("attrs value is: %s", attrs));
+		if(attrs != null)
+		{
+			TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
 
-		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
+			try {
+				_fileDisplayName = typedArray.getString(R.styleable.SongFileView_fileDisplayName);
+				if(_fileDisplayName == null) _fileDisplayName = "SongName";
+				_nameTextSize = typedArray.getFloat(R.styleable.SongFileView_nameTextSize, _defaultNameTextSize);
 
-		try {
-			_fileDisplayName = typedArray.getString(R.styleable.SongFileView_fileDisplayName);
-			if(_fileDisplayName == null) _fileDisplayName = "SongName";
-			_nameTextSize = typedArray.getFloat(R.styleable.SongFileView_nameTextSize, _defaultNameTextSize);
+				_fileDisplayArtistName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
+				if(_fileDisplayArtistName == null) _fileDisplayArtistName = "Unknown artist";
+				_artistAlbumNameTextSize = typedArray.getFloat(R.styleable.SongFileView_artistAlbumNameTextSize, _defaultArtistAlbumTextSize);
 
-			_fileDisplayArtistName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
-			if(_fileDisplayArtistName == null) _fileDisplayArtistName = "Unknown artist";
-			_artistAlbumNameTextSize = typedArray.getFloat(R.styleable.SongFileView_artistAlbumNameTextSize, _defaultArtistAlbumTextSize);
+				_fileDisplayAlbumName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
+				if(_fileDisplayAlbumName == null) _fileDisplayAlbumName = "None";
 
-			_fileDisplayAlbumName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
-			if(_fileDisplayAlbumName == null) _fileDisplayAlbumName = "None";
+				_backgroundDisplayColor = typedArray.getColor(R.styleable.SongFileView_backgroundDisplayColor, Color.RED);
+				_fontDisplayColor = typedArray.getColor(R.styleable.SongFileView_fontDisplayColor, Color.BLACK);
 
-			_backgroundDisplayColor = typedArray.getColor(R.styleable.SongFileView_backgroundDisplayColor, Color.WHITE);
-			_fontDisplayColor = typedArray.getColor(R.styleable.SongFileView_fontDisplayColor, Color.BLACK);
+				_imageMargin = typedArray.getFloat(R.styleable.SongFileView_imageMargin, 25f);
 
-			_imageMargin = typedArray.getFloat(R.styleable.SongFileView_imageMargin, 25f);
-
-		} finally {
-			typedArray.recycle();
+			} finally {
+				typedArray.recycle();
+			}
 		}
 
+		setMinimumHeight(200);
+		setMinimumWidth(100);
+		Log.d("SET_SIZE", "Set the minimum width and height");
 	}
 
 	private Bitmap getResizeBitMap(Bitmap bitmap, int reqWidth, int reqHeight) {
@@ -145,18 +150,21 @@ public class SongFileView extends View {
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
 
-		_painter.setColor(_fontDisplayColor);
-		_painter.setTextAlign(Paint.Align.LEFT);
-		_painter.setTextSize(_nameTextSize);
-		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
-		canvas.drawText(_fileDisplayName, _image.getWidth() + ((int) (_imageMargin * 2)),
-				((height / 4f) + _imageMargin) + (height * 0.1f),
-				_painter);
-		_painter.setTextSize(_artistAlbumNameTextSize);
-		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
-				_image.getWidth() + ((int) (_imageMargin * 2)),
-				(((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f),
-				_painter);
+//		_painter.setColor(_fontDisplayColor);
+//		_painter.setTextAlign(Paint.Align.LEFT);
+//		_painter.setTextSize(_nameTextSize);
+//		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
+//		canvas.drawText(_fileDisplayName, _image.getWidth() + ((int) (_imageMargin * 2)),
+//				((height / 4f) + _imageMargin) + (height * 0.1f),
+//				_painter);
+//		_painter.setTextSize(_artistAlbumNameTextSize);
+//		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
+//				_image.getWidth() + ((int) (_imageMargin * 2)),
+//				(((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f),
+//				_painter);
+//		Log.d("Hola1", "(" + getWidth() + " , " + getHeight() + "), Image: (" + _image.getWidth() + ", " + _image.getHeight() + ")");
+//		Log.d("Hola1", "x: " + (_image.getWidth() + ((int) (_imageMargin * 2))));
+//		Log.d("Hola1", "y: " + ((((height / 4f) + (height / 2f)) + _imageMargin) + (height * 0.1f)));
 	}
 
 	@Override

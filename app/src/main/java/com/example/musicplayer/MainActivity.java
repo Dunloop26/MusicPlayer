@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int length = files.length;
+//        int length = 2;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -75,9 +76,8 @@ public class MainActivity extends AppCompatActivity {
             if (!currentFile.canRead()) continue;
 
             SongFileView view = new SongFileView(this);
-            view.setFileDisplayName("fileIndex");
             view.setFileDisplayName(currentFile.getName());
-            view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
+            // view.setFileDisplayTextSize(getWindow().getWindowManager().getDefaultDisplay().getWidth() / 25f);
             view.setReferenceFile(currentFile);
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             view.setLayoutParams(new LinearLayout.LayoutParams(_fileViewContainer.getWidth() - 50, dpToPx(80, this)));
-            Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
+//            Log.d("Hola", _fileViewContainer.getWidth() + "");
+//            Log.d("TestView", "Width: " + view.getWidth() + " , height: " + view.getHeight());
             _fileViewContainer.addView(view);
         }
     }

@@ -148,7 +148,7 @@ public class FileSearcher {
     public static void printFileUtil(File[] _fileList) {
         for (int i = 0; i < _fileList.length; i++) {
             File currentSong = _fileList[i];
-            Log.d("Song", "Name: " + currentSong.getName() + ", Path: " + currentSong.getAbsolutePath());
+//            Log.d("Song", "Name: " + currentSong.getName() + ", Path: " + currentSong.getAbsolutePath());
         }
     }
 
