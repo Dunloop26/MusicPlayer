@@ -2,7 +2,7 @@
 <resources>
     <color name="colorLightModeBackground">#ffffff</color>
     <color name="colorLightModePrimaryText">#04030F</color>
-    <color name="colorLightModeSecundaryText">#7C7287</color>
+    <color name="colorLightModeSecundaryText">#AAA8AC</color>
     <color name="colorLightModeIcon">#EE964B</color>
 
 
