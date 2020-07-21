@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.io.File;
 
@@ -26,23 +25,22 @@ class MetadataMp3
 	public void extractMetadata()
 	{
 		_mediaMetadataRetreive.setDataSource(_mp3File.getAbsolutePath());
-		try {
-			byte[] byteImage = _mediaMetadataRetreive.getEmbeddedPicture();
+		byte[] byteImage = _mediaMetadataRetreive.getEmbeddedPicture();
+		if(byteImage != null)
 			_image = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-			_albumName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-			_artistName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-			_genreName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-			_title = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-		}
-		catch
-		(Exception e)
-		{
-			Log.d("MetadataError", e.getMessage());
+		_albumName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+		_artistName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+		_genreName = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+		_title = _mediaMetadataRetreive.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+
+		if(_albumName == null)
 			_albumName = "Unknown Album";
+		if(_artistName == null)
 			_artistName = "Unknown Artist";
+		if(_genreName == null)
 			_genreName = "Unknown Genre";
+		if(_title == null)
 			_title = "Unknown Title";
-		}
 	}
 
 	public Bitmap getImage() {

@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -79,13 +80,17 @@ public class MainActivity extends AppCompatActivity {
             metadataMp3.extractMetadata();
 
             SongFileView view = new SongFileView(this);
-            view.setFileDisplayName(metadataMp3.getTitle());
+            view.setNameTextSize(spToPx(17, this));
+            view.setArtistAlbumNameTextSize(spToPx(15, this));
             view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
             view.setFileDisplayArtistName(metadataMp3.getArtistName());
             view.setImage(metadataMp3.getImage());
             view.setReferenceFile(currentFile);
-
-            view.renderImage();
+            String title = metadataMp3.getTitle();
+            if(title.equals("Unknown Title"))
+                view.setFileDisplayName(currentFile.getName());
+            else
+                view.setFileDisplayName(title);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -96,9 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-
-
-            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(80, this));
+            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(70, this));
 //            layout.weight = 1;
 //            layout.setMargins(-100,100,0,100);
             view.setLayoutParams(layout);
@@ -112,8 +115,11 @@ public class MainActivity extends AppCompatActivity {
         _songWrapper.play(songFileView.getReferenceFile());
     }
 
-    public int dpToPx(int dp, Context context) {
-        float density = context.getResources().getDisplayMetrics().density;
-        return Math.round((float) dp * density);
+    public static int dpToPx(float dp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
+
+    public static int spToPx(float sp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
 }
