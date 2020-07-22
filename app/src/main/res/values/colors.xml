@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Light mode-->
     <color name="colorLightModeBackground">#ffffff</color>
     <color name="colorLightModePrimaryText">#04030F</color>
     <color name="colorLightModeSecundaryText">#AAA8AC</color>
     <color name="colorLightModeIcon">#EE964B</color>
 
-
+    <!-- Dark mode-->
     <color name="colorDarkModeBackground">#131B23</color>
     <color name="colorDarkModePrimaryText">#FFFFFF</color>
     <color name="colorDarkModeSecundaryText">#828A95</color>

@@ -1,23 +1,25 @@
 package com.example.musicplayer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.media.MediaPlayer;
-import android.widget.TextView;
 
+import com.example.musicplayer.util.MusicPlayerUtil;
 import com.example.musicplayer.views.SongFileView;
 
 import java.io.File;
@@ -33,10 +35,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button btn = findViewById(R.id.btnBuscar);
 
-
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+
+        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.three_dot_xxhdpi);
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        DrawableCompat.setTint(wrappedDrawable, Color.RED);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,13 +59,6 @@ public class MainActivity extends AppCompatActivity {
         fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
         File[] files = fileSearcher.getFiles();
         fileSearcher.printFileUtil(files);
-
-        //songWrapper.play("/storage/emulated/0/Music/Deezloader Music/Imagine Dragons - Believer.mp3");
-//        FileSearcher fileSearcher = new FileSearcher(".mp3", this);
-//        fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
-//        File[] files = fileSearcher.getFiles();
-//        fileSearcher.printFileUtil(files);
-//
         createFileView(files);
     }
 
@@ -69,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int length = files.length;
-//        int length = 1;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -80,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             metadataMp3.extractMetadata();
 
             SongFileView view = new SongFileView(this);
-            view.setNameTextSize(spToPx(17, this));
-            view.setArtistAlbumNameTextSize(spToPx(15, this));
+            view.setNameTextSize(MusicPlayerUtil.spToPx(17, this));
+            view.setArtistAlbumNameTextSize(MusicPlayerUtil.spToPx(15, this));
             view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
             view.setFileDisplayArtistName(metadataMp3.getArtistName());
             view.setImage(metadataMp3.getImage());
@@ -101,9 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(70, this));
-//            layout.weight = 1;
-//            layout.setMargins(-100,100,0,100);
+            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), MusicPlayerUtil.dpToPx(70, this));
             view.setLayoutParams(layout);
             _fileViewContainer.addView(view);
         }
@@ -115,11 +111,5 @@ public class MainActivity extends AppCompatActivity {
         _songWrapper.play(songFileView.getReferenceFile());
     }
 
-    public static int dpToPx(float dp, Context context) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
-    }
 
-    public static int spToPx(float sp, Context context) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
-    }
 }

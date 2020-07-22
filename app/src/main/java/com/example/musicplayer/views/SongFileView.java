@@ -5,60 +5,137 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
 import com.example.musicplayer.R;
+import com.example.musicplayer.util.MusicPlayerUtil;
 
 import java.io.File;
 
 public class SongFileView extends View {
 
+	/**
+	 * Contextp de la VIew
+	 */
 	private Context _context;
 
+	/**
+	 * Titulo del mp3
+	 */
 	private String _fileDisplayTitle;
+
+	/**
+	 * Tamaño del titulo
+	 */
 	private float _nameTextSize;
+
+	/**
+	 *  Artista del mp3
+	 */
 	private String _fileDisplayArtistName;
+
+	/**
+	 * Tamaño del texto para el artista y el album
+	 */
 	private float _artistAlbumNameTextSize;
+
+	/**
+	 * Album del mp3
+	 */
 	private String _fileDisplayAlbumName;
+
+	/**
+	 * Color del fondo de la view
+	 */
 	private int _backgroundDisplayColor;
+
+	/**
+	 * Color del texto para el titulo
+	 */
 	private int _fontDisplayTitleColor;
+
+	/**
+	 * Color del texto para el artista y el album
+	 */
 	private int _fontDisplayArtistAlbumColor;
+
+	/**
+	 * Margen de para la imagen con respecto a la altura de la view
+	 */
 	private float _imageMargin;
 
-	private float _defaultNameTextSize = 42f;
-	private float _defaultArtistAlbumTextSize = 35f;
-	private float _defaultImageMargin = 35f;
+	/**
+	 * tamaño por defecto del texto para el nombre
+	 */
+	public static float DEFAULT_NAME_TEXT_SIZE;
 
+	/**
+	 * tamaño por defecto del texto para el artista y el album
+	 */
+	public static float DEFAULT_ARTIST_ALBUM_TEXT_SIZE;
+
+	/**
+	 * Relacion de la margen con respecto a la altura de la view
+	 */
+	public static final float DEFAULT_IMAGE_MARGIN_RELATION = 0.1875f;
+
+	/**
+	 * Relacion del espacio para el texto con respecto al ancho de la view
+	 */
+	public static final float MEASURED_TEXT_RELATION = 0.65f;
+
+	/**
+	 * Maximo de pixeles disponibles para dibujor el texto en el canvas
+	 */
+	private float _maxMeasuredText;
+
+	/**
+	 * Archivo de referecia para la view
+	 */
 	private File _referenceFile;
 
 	private Paint _painter;
 	private Rect _drawingRect;
 
+	/**
+	 * Imagen de la portada del album
+	 */
 	private Bitmap _image;
 
+	/**
+	 * Imagen para el boton de mas opciones
+	 */
+	private Bitmap _moreOptionsImage;
+
+	/**
+	 * Tamaño de la imagen
+	 */
 	private int _imageSize;
 
 	public SongFileView(Context context) {
 		super(context);
 		_context = context;
+		DEFAULT_NAME_TEXT_SIZE = MusicPlayerUtil.spToPx(17, _context);
+		DEFAULT_ARTIST_ALBUM_TEXT_SIZE = MusicPlayerUtil.spToPx(15, _context);
 		init(null);
 	}
 
 	public SongFileView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		_context = context;
+		DEFAULT_NAME_TEXT_SIZE = MusicPlayerUtil.spToPx(17, _context);
+		DEFAULT_ARTIST_ALBUM_TEXT_SIZE = MusicPlayerUtil.spToPx(15, _context);
 		init(attrs);
+
 	}
 
 	private void init(@Nullable AttributeSet attrs) {
@@ -66,16 +143,20 @@ public class SongFileView extends View {
 		_painter = new Paint(Paint.ANTI_ALIAS_FLAG);
 		_drawingRect = new Rect();
 
+
+
+
+		// Obtencion de datos
 		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
 
 		try {
 			_fileDisplayTitle = typedArray.getString(R.styleable.SongFileView_fileDisplayName);
 			if (_fileDisplayTitle == null) _fileDisplayTitle = "Unknown title";
-			_nameTextSize = typedArray.getDimension(R.styleable.SongFileView_nameTextSize, _defaultNameTextSize);
+			_nameTextSize = typedArray.getDimension(R.styleable.SongFileView_nameTextSize, DEFAULT_NAME_TEXT_SIZE);
 
 			_fileDisplayArtistName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
 			if (_fileDisplayArtistName == null) _fileDisplayArtistName = "Unknown artist";
-			_artistAlbumNameTextSize = typedArray.getDimension(R.styleable.SongFileView_artistAlbumNameTextSize, _defaultArtistAlbumTextSize);
+			_artistAlbumNameTextSize = typedArray.getDimension(R.styleable.SongFileView_artistAlbumNameTextSize, DEFAULT_ARTIST_ALBUM_TEXT_SIZE);
 
 			_fileDisplayAlbumName = typedArray.getString(R.styleable.SongFileView_fileDisplayAlbumName);
 			if (_fileDisplayAlbumName == null) _fileDisplayAlbumName = "Unknown album";
@@ -84,15 +165,25 @@ public class SongFileView extends View {
 			_fontDisplayTitleColor = typedArray.getColor(R.styleable.SongFileView_fontDisplayColor, getResources().getColor(R.color.colorLightModePrimaryText));
 			_fontDisplayArtistAlbumColor = typedArray.getColor(R.styleable.SongFileView_fontDisplayColor, getResources().getColor(R.color.colorLightModeSecundaryText));
 
-			_imageMargin = typedArray.getFloat(R.styleable.SongFileView_imageMargin, _defaultImageMargin);
+			_imageMargin = typedArray.getFloat(R.styleable.SongFileView_imageMargin, 35f);
 
 		} finally {
 			typedArray.recycle();
 		}
 
+
 		renderImage();
+
+
 	}
 
+	/**
+	 * Metodo que reescala la imagen a un ancho y un alto deseado
+	 * @param bitmap imagen a reescalar
+	 * @param reqWidth ancho deseado
+	 * @param reqHeight alto deseado
+	 * @return
+	 */
 	private Bitmap getResizeBitMap(Bitmap bitmap, int reqWidth, int reqHeight) {
 		Matrix matrix = new Matrix();
 
@@ -104,12 +195,16 @@ public class SongFileView extends View {
 		return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 	}
 
+	/**
+	 * Metodo que rendeiza las imagenes de la view
+	 */
 	public void renderImage()
 	{
 
 		if(_image == null)
 			_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
 
+		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.option);
 		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
@@ -117,11 +212,22 @@ public class SongFileView extends View {
 					getViewTreeObserver().removeOnGlobalLayoutListener(this);
 				else
 					getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+				_maxMeasuredText = getWidth() * MEASURED_TEXT_RELATION;
+
+				_imageMargin = ((float)getHeight()) * DEFAULT_IMAGE_MARGIN_RELATION;
 				_imageSize = getHeight() - ((int) (_imageMargin * 2));
 				_image = getResizeBitMap(_image, _imageSize, _imageSize);
+				int moreOptHeight = (int)(getHeight() - (getHeight() * 0));
+
+				int moreOptWidth = (int) (moreOptHeight * _moreOptionsImage.getWidth() / _moreOptionsImage.getHeight());
+				_moreOptionsImage = getResizeBitMap(_moreOptionsImage, moreOptHeight, moreOptWidth);
+
 			}
 
 		});
+
+
 	}
 
 
@@ -134,13 +240,19 @@ public class SongFileView extends View {
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
 
-		_painter.setColor(_fontDisplayTitleColor);
-		_painter.setTextAlign(Paint.Align.LEFT);
-		_painter.setTextSize(_nameTextSize);
 		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
-		canvas.drawText(_fileDisplayTitle, _imageSize + ((int) (_imageMargin * 2)),
+		canvas.drawBitmap(_moreOptionsImage,
+				getWidth() - _imageMargin - _moreOptionsImage.getWidth(),
+				(getHeight() / 2) - (_moreOptionsImage.getHeight() / 2), _painter);
+
+		_painter.setColor(_fontDisplayTitleColor);
+		_painter.setTextSize(_nameTextSize);
+		_painter.setTextAlign(Paint.Align.LEFT);
+
+		drawText(_fileDisplayTitle,
+				_imageSize + ((int) (_imageMargin * 2)),
 				((_imageSize / 4f) + _imageMargin) + (_imageSize * 0.1f),
-				_painter);
+				canvas);
 
 		_painter.setColor(_fontDisplayArtistAlbumColor);
 		_painter.setStrokeWidth(0.7f);
@@ -148,10 +260,36 @@ public class SongFileView extends View {
 		canvas.drawLine(getHeight(), getHeight(), getWidth() - _imageMargin, getHeight(), _painter);
 
 		_painter.setTextSize(_artistAlbumNameTextSize);
-		canvas.drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
+
+		drawText(String.format("%s | %s", _fileDisplayArtistName,_fileDisplayAlbumName),
 				_imageSize + ((int) (_imageMargin * 2)),
 				(((_imageSize / 4f) + (_imageSize / 2f)) + _imageMargin) + (_imageSize * 0.1f),
-				_painter);
+				canvas);
+	}
+
+	/**
+	 * Metodo que dibuja los texto en el canvas con respecto al espacio definido para el texto
+	 * @param text texto a dibujar
+	 * @param x coordenada x
+	 * @param y coordenada y
+	 * @param canvas
+	 */
+	private void drawText(String text, float x, float y, Canvas canvas)
+	{
+		// Se Obtiene el ancho en pixeles que ocupa la imagen
+		// con respecto al tamaño del texto definido en el painter
+		float measuredText = _painter.measureText(text);
+
+
+		if(measuredText > _maxMeasuredText)
+		{
+			int chars = _painter.breakText(text, true, _maxMeasuredText, null);
+			canvas.drawText(String.format("%s...", text.substring(0, chars)), x, y, _painter);
+		}
+		else
+		{
+			canvas.drawText(text, x, y, _painter);
+		}
 	}
 
 	@Override
@@ -159,6 +297,10 @@ public class SongFileView extends View {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
 	}
+
+	/*
+	 * Getters and Setters
+	 */
 
 	public void setReferenceFile(File file) {
 		_referenceFile = file;
