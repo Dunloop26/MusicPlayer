@@ -1,9 +1,8 @@
 package com.example.musicplayer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -11,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musicplayer.views.SongFileView;
 
@@ -20,12 +21,16 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewGroup _fileViewContainer;
     private SongWrapper _songWrapper;
+    private Intent _songDetailsIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btn = findViewById(R.id.btnBuscar);
+
+        if(_songDetailsIntent == null)
+            _songDetailsIntent = new Intent(this, MainActivity.class);
 
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         FileSearcher fileSearcher = new FileSearcher(".mp3", this);
         fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
         File[] files = fileSearcher.getFiles();
-        fileSearcher.printFileUtil(files);
+        FileSearcher.printFileUtil(files);
 
         //songWrapper.play("/storage/emulated/0/Music/Deezloader Music/Imagine Dragons - Believer.mp3");
 //        FileSearcher fileSearcher = new FileSearcher(".mp3", this);
@@ -64,11 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         _fileViewContainer.removeAllViews();
 
-        int length = files.length;
 //        int length = 1;
-        for (int fileIndex = 0; fileIndex < length; fileIndex++) {
-            File currentFile = files[fileIndex];
-
+        for (File currentFile : files) {
             if (currentFile == null) continue;
             if (!currentFile.canRead()) continue;
 
@@ -103,13 +105,18 @@ public class MainActivity extends AppCompatActivity {
         view.setReferenceFile(songFile);
 
         String title = metadata.title;
-        view.setFileDisplayName(title.equals(MetaDataWrapperUtil.UNKNOWN_TITLE) ? songFile.getName() : title);
+        view.setFileDisplayName(
+                title.equals(MetaDataWrapperUtil.UNKNOWN_TITLE)
+                        ? songFile.getName()
+                        : title);
+
     }
 
     private void songClickListener(SongFileView songFileView) {
         if (_songWrapper == null) return;
 
-        _songWrapper.play(songFileView.getReferenceFile());
+//        _songWrapper.play(songFileView.getReferenceFile());
+//        startActivity(_songDetailsIntent, );
     }
 
     public static int dpToPx(float dp, Context context) {
