@@ -7,10 +7,68 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class SongWrapper {
     private MediaPlayer _player;
     private boolean _prepareForPlay = false;
+
+    private File _currentSongFile;
+
+    // Realizo la lista de listeners
+    private ArrayList<OnSongPlayActionListener> _onPlayActionListeners = new ArrayList<>();
+    private ArrayList<OnSongStopActionListener> _onStopActionListeners = new ArrayList<>();
+
+    public interface OnSongPlayActionListener
+    {
+        void onSongPlayAction(SongWrapper sw, File file);
+    }
+    public interface OnSongStopActionListener
+    {
+        void onSongStopAction(SongWrapper sw, File file);
+    }
+
+    public void addOnSongPlayActionListener(OnSongPlayActionListener listener)
+    {
+        if(listener != null)
+            _onPlayActionListeners.add(listener);
+    }
+
+    public void addOnSongStopActionListener(OnSongStopActionListener listener)
+    {
+        if(listener != null)
+            _onStopActionListeners.add(listener);
+    }
+
+    public void removeOnSongPlayActionListener(OnSongPlayActionListener listener)
+    {
+        if(listener != null)
+            _onStopActionListeners.remove(listener);
+    }
+
+    public void removeOnSongStopActionListener(OnSongStopActionListener listener)
+    {
+        if(listener != null)
+            _onPlayActionListeners.remove(listener);
+    }
+
+    private void fireOnSongPlayActionListener(File file)
+    {
+        for(OnSongPlayActionListener listener : _onPlayActionListeners)
+        {
+            if(listener != null)
+                listener.onSongPlayAction(this, file);
+        }
+    }
+
+    private void fireOnSongStopActionListener(File file)
+    {
+        for(OnSongStopActionListener listener : _onStopActionListeners)
+        {
+            if(listener != null)
+                listener.onSongStopAction(this, file);
+        }
+    }
 
     private MediaPlayer getMediaPlayer() {
 
@@ -52,12 +110,19 @@ public class SongWrapper {
             _prepareForPlay = false;
             // Inicio la reproducción
             player.start();
+
+            // Ejecuto el evento de reproducción
+            fireOnSongPlayActionListener(getCurrentSongFile());
         }
+    }
+
+    public File getCurrentSongFile()
+    {
+        return _currentSongFile;
     }
 
     public void play(File songFile) {
         // Si la no canción existe
-
         if (!songFile.exists()) return;
         // Obtengo el reproductor
         _player = getMediaPlayer();
@@ -76,9 +141,13 @@ public class SongWrapper {
         _prepareForPlay = true;
         _player.prepareAsync();
 
+        // Defino el archivo actual para reproducción
+        _currentSongFile = songFile;
+
     }
 
     public void play(String filepath) {
+        // TODO: Encubrir en un try-catch para evitar potenciales errores al no encontrar la ruta del archivo
         // Uso el mismo método, para evitar repetir código
         File songFile = new File(filepath);
         play(songFile);
@@ -86,5 +155,11 @@ public class SongWrapper {
 
     public void stop() {
         _player.stop();
+
+        // Ejecuto el evento con la canción que se detuvo
+        fireOnSongStopActionListener(_currentSongFile);
+
+        // Borro la referencia a la canción en reproducción
+        _currentSongFile = null;
     }
 }
