@@ -4,19 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.media.MediaPlayer;
-import android.widget.TextView;
 
 import com.example.musicplayer.views.SongFileView;
 
@@ -68,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer = findViewById(R.id.songListContainer);
         }
 
+        _fileViewContainer.removeAllViews();
+
         int length = files.length;
 //        int length = 1;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
@@ -76,21 +72,8 @@ public class MainActivity extends AppCompatActivity {
             if (currentFile == null) continue;
             if (!currentFile.canRead()) continue;
 
-            MetadataMp3 metadataMp3 = new MetadataMp3(currentFile);
-            metadataMp3.extractMetadata();
-
             SongFileView view = new SongFileView(this);
-            view.setNameTextSize(spToPx(17, this));
-            view.setArtistAlbumNameTextSize(spToPx(15, this));
-            view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
-            view.setFileDisplayArtistName(metadataMp3.getArtistName());
-            view.setImage(metadataMp3.getImage());
-            view.setReferenceFile(currentFile);
-            String title = metadataMp3.getTitle();
-            if(title.equals("Unknown Title"))
-                view.setFileDisplayName(currentFile.getName());
-            else
-                view.setFileDisplayName(title);
+            setupViewData(this, currentFile, view);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,11 +85,25 @@ public class MainActivity extends AppCompatActivity {
             });
 
             LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), dpToPx(70, this));
-//            layout.weight = 1;
-//            layout.setMargins(-100,100,0,100);
             view.setLayoutParams(layout);
             _fileViewContainer.addView(view);
         }
+    }
+
+    private void setupViewData(Context context, File songFile, SongFileView view)
+    {
+        MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFile);
+
+        view.setNameTextSize(spToPx(17, context));
+        view.setArtistAlbumNameTextSize(spToPx(15, context));
+
+        view.setFileDisplayAlbumName(metadata.albumName);
+        view.setFileDisplayArtistName(metadata.artistName);
+        view.setImage(metadata.image);
+        view.setReferenceFile(songFile);
+
+        String title = metadata.title;
+        view.setFileDisplayName(title.equals(MetaDataWrapperUtil.UNKNOWN_TITLE) ? songFile.getName() : title);
     }
 
     private void songClickListener(SongFileView songFileView) {
