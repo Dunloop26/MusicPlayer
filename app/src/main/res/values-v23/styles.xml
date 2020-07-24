@@ -4,7 +4,8 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorLightModeBackground</item>
-        <item name="colorPrimaryDark">@color/colorDarkModeBackground</item>
+        <item name="colorPrimaryDark">@color/colorLightModeBackground</item>
         <item name="android:navigationBarColor">@color/colorLightModeBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

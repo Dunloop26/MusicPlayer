@@ -5,7 +5,7 @@
     android:background="@color/colorLightModeBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
 
     <Button
@@ -34,5 +34,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

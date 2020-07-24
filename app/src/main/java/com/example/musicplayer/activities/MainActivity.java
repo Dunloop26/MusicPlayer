@@ -1,24 +1,24 @@
-package com.example.musicplayer;
+package com.example.musicplayer.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.musicplayer.FileSearcher;
+import com.example.musicplayer.MetadataMp3;
+import com.example.musicplayer.R;
+import com.example.musicplayer.SongWrapper;
 import com.example.musicplayer.util.MusicPlayerUtil;
 import com.example.musicplayer.views.SongFileView;
 
@@ -37,12 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= 23) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
 
         Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.three_dot_xxhdpi);
         Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, Color.RED);
+        DrawableCompat.setTint(wrappedDrawable, Color.BLACK);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             MetadataMp3 metadataMp3 = new MetadataMp3(currentFile);
             metadataMp3.extractMetadata();
 
-            SongFileView view = new SongFileView(this);
+            final SongFileView view = new SongFileView(this);
             view.setNameTextSize(MusicPlayerUtil.spToPx(17, this));
             view.setArtistAlbumNameTextSize(MusicPlayerUtil.spToPx(15, this));
             view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
@@ -94,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (v.getClass() == SongFileView.class) {
-                        songClickListener((SongFileView) v);
+//                        songClickListener((SongFileView) v);
+                        view.animateTouched();
+                        Intent intent = new Intent(MainActivity.this, SongOptionsActivity.class);
+                        startActivity(intent);
                     }
                 }
             });

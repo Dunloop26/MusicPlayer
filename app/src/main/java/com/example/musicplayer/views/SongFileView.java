@@ -1,20 +1,27 @@
 package com.example.musicplayer.views;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.musicplayer.R;
 import com.example.musicplayer.util.MusicPlayerUtil;
@@ -204,7 +211,8 @@ public class SongFileView extends View {
 		if(_image == null)
 			_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
 
-		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.option);
+
+		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.three_dot_xxhdpi);
 		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
@@ -218,7 +226,7 @@ public class SongFileView extends View {
 				_imageMargin = ((float)getHeight()) * DEFAULT_IMAGE_MARGIN_RELATION;
 				_imageSize = getHeight() - ((int) (_imageMargin * 2));
 				_image = getResizeBitMap(_image, _imageSize, _imageSize);
-				int moreOptHeight = (int)(getHeight() - (getHeight() * 0));
+				int moreOptHeight = (int)(getHeight() - (getHeight() * 0.3f));
 
 				int moreOptWidth = (int) (moreOptHeight * _moreOptionsImage.getWidth() / _moreOptionsImage.getHeight());
 				_moreOptionsImage = getResizeBitMap(_moreOptionsImage, moreOptHeight, moreOptWidth);
@@ -240,9 +248,12 @@ public class SongFileView extends View {
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
 
+		// Se dibuja la imagen de la caratula
 		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
+
+		//Se dibuja la imagen de el boton para mas opciones
 		canvas.drawBitmap(_moreOptionsImage,
-				getWidth() - _imageMargin - _moreOptionsImage.getWidth(),
+				getWidth() - (_imageMargin * 2) - _moreOptionsImage.getWidth(),
 				(getHeight() / 2) - (_moreOptionsImage.getHeight() / 2), _painter);
 
 		_painter.setColor(_fontDisplayTitleColor);
@@ -304,6 +315,22 @@ public class SongFileView extends View {
 
 	public void setReferenceFile(File file) {
 		_referenceFile = file;
+	}
+
+	public void animateTouched()
+	{
+		ValueAnimator animator = ValueAnimator.ofInt(0, 50, 0);
+		animator.setDuration(300);
+		animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				int value = (int) animation.getAnimatedValue();
+				_backgroundDisplayColor = Color.rgb(255 - value, 255 - value, 255 - value);
+				invalidate();
+			}
+		});
+
+		animator.start();
 	}
 
 	public File getReferenceFile() {

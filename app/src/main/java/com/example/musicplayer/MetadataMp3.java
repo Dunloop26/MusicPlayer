@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.io.File;
 
-class MetadataMp3
+public class MetadataMp3
 {
 	private MediaMetadataRetriever _mediaMetadataRetreive;
 	private Bitmap _image;
