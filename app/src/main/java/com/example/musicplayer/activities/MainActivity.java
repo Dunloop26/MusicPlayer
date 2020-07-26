@@ -1,5 +1,6 @@
 package com.example.musicplayer.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 		if(_songDetailsIntent == null)
-			_songDetailsIntent = new Intent(this, MusicApplication.class);
+			_songDetailsIntent = new Intent(this, SongDetailsActivity.class);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 debugFileSearcher();
             }
         });
-        _songWrapper = new SongWrapper();
+        _songWrapper = ((MusicApplication) getApplication()).getSongWrapper();
 
     }
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         fileSearcher.printFileUtil(files);
         createFileView(files);
     }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private void createFileView(File[] files) {
@@ -84,6 +86,27 @@ public class MainActivity extends AppCompatActivity {
             final SongFileView view = new SongFileView(this);
 			setupViewData(this, currentFile, view);
 
+
+			// TODO : Refactorizar el codigo de los gestos
+			//		Aqui un ejemplo.
+			//			TouchGestureSolver _t;
+			//			_t.setOnTouchUpAction = new TouchSolverMethod(TouchGestureSolver t)
+			//			{
+			//				if(t.getTouchDuration() > 3000)
+			//				playLiftAnimation()
+			//			}
+			//			_t.setOnTouchDownAction
+			//			{
+			//				playTouchAnimation()
+			//			}
+			//			view.setOnTouchListener(_t);
+			//			TouchGestureSolver implements View.TouchListener
+			//			{
+			//				onTouch()
+			//				{
+			//					onTouchAction(this)
+			//				}
+			//			}
             view.setOnTouchListener(new View.OnTouchListener() {
 
                 private long tInicio = 0;
@@ -100,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
 				private Handler mHandler;
 
-                @Override
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+				@Override
                 public boolean onTouch(View v, final MotionEvent event) {
                     int eventAction = event.getAction();
 					int xAct;
@@ -145,27 +169,39 @@ public class MainActivity extends AppCompatActivity {
 								if(Math.abs(xIni - xAct) > 50 || Math.abs(yIni - yAct) > 50)
 								{
 									cancelado = true;
-									mHandler = null;
 									moreOptions = false;
 									presionado = false;
+									if(animation)
+									{
+										view.animateReleaseTouched();
+									}
 									animation = false;
-									view.animateReleaseTouched();
+									if(mHandler == null) return true;
+									mHandler.removeCallbacks(mAction);
+									mHandler = null;
 								}
 							}
 
 							break;
 
                         case MotionEvent.ACTION_CANCEL:
-                            view.animateReleaseTouched();
+                            if(animation)
+                            {
+								view.animateReleaseTouched();
+							}
+							animation = false;
                             cancelado = true;
+                            if(mHandler == null) return true;
+							mHandler.removeCallbacks(mAction);
                             mHandler = null;
                             break;
 
                         case MotionEvent.ACTION_UP:
                             tFinal = System.currentTimeMillis();
                             tDiferencia = tFinal - tInicio;
-                            if(animation)
-                                view.animateReleaseTouched();
+                            if(animation) {
+								view.animateReleaseTouched();
+							}
 
                             if(!cancelado)
                             {
@@ -176,8 +212,7 @@ public class MainActivity extends AppCompatActivity {
                                         Intent intent = new Intent(MainActivity.this, SongOptionsActivity.class);
                                         startActivity(intent);
                                     } else {
-//                                        songClickListener((SongFileView) v);
-										startActivity(_songDetailsIntent);
+                                        songClickListener((SongFileView) v);
                                     }
                                 }
                             }
@@ -203,7 +238,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Toast.makeText(MainActivity.this, "This is my Toast message!",
                                     Toast.LENGTH_LONG).show();
-                            view.animateReleaseTouched();
+                            if(animation)
+                            {
+								view.animateReleaseTouched();
+							}
                             animation = false;
                         }
                     }
@@ -236,11 +274,16 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
-    private void songClickListener(SongFileView songFileView) {
-        if (_songWrapper == null) return;
+	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+	private void songClickListener(SongFileView songFileView) {
+		if (_songWrapper == null) return;
+		_songWrapper.play(songFileView.getReferenceFile());
+		MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFileView.getReferenceFile());
 
-        _songWrapper.play(songFileView.getReferenceFile());
-    }
+		Bundle options = new Bundle();
+		options.putParcelable(SongDetailsActivity.BUNDLE_SONG_METADATA, metadata);
+		startActivity(_songDetailsIntent, options);
+	}
 
 
 }
