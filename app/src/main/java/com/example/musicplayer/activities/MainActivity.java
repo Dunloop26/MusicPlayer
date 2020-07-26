@@ -1,33 +1,27 @@
 package com.example.musicplayer.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.icu.util.LocaleData;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.musicplayer.FileSearcher;
-import com.example.musicplayer.MetadataMp3;
+import com.example.musicplayer.MP3Metadata;
+import com.example.musicplayer.MetaDataWrapperUtil;
+import com.example.musicplayer.MusicApplication;
 import com.example.musicplayer.R;
 import com.example.musicplayer.SongWrapper;
 import com.example.musicplayer.util.MusicPlayerUtil;
@@ -39,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewGroup _fileViewContainer;
     private SongWrapper _songWrapper;
+	private Intent _songDetailsIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +45,8 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
 
-        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.three_dot_xxhdpi);
-        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, Color.BLACK);
+		if(_songDetailsIntent == null)
+			_songDetailsIntent = new Intent(this, MusicApplication.class);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,52 +72,17 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer = findViewById(R.id.songListContainer);
         }
 
-//        int length = files.length;
-        int length = 1;
+		_fileViewContainer.removeAllViews();
+
+        int length = files.length;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
             if (currentFile == null) continue;
             if (!currentFile.canRead()) continue;
 
-            MetadataMp3 metadataMp3 = new MetadataMp3(currentFile);
-            metadataMp3.extractMetadata();
-
             final SongFileView view = new SongFileView(this);
-            view.setNameTextSize(MusicPlayerUtil.spToPx(17, this));
-            view.setArtistAlbumNameTextSize(MusicPlayerUtil.spToPx(15, this));
-            view.setFileDisplayAlbumName(metadataMp3.getAlbumName());
-            view.setFileDisplayArtistName(metadataMp3.getArtistName());
-            view.setImage(metadataMp3.getImage());
-            view.setReferenceFile(currentFile);
-            String title = metadataMp3.getTitle();
-            if(title.equals("Unknown Title"))
-                view.setFileDisplayName(currentFile.getName());
-            else
-                view.setFileDisplayName(title);
-
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (v.getClass() == SongFileView.class) {
-//                        Log.d("Movimiento", "clickeo");
-//
-////                        songClickListener((SongFileView) v);
-//                        view.animateTouched();
-////                        Intent intent = new Intent(MainActivity.this, SongOptionsActivity.class);
-////                        startActivity(intent);
-//                    }
-//                }
-//            });
-//
-//            view.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    Log.d("Movimiento", "Se mantiene");
-//                    view.animateReleaseTouched();
-//                    return true;
-//                }
-//            });
+			setupViewData(this, currentFile, view);
 
             view.setOnTouchListener(new View.OnTouchListener() {
 
@@ -217,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
                                         Intent intent = new Intent(MainActivity.this, SongOptionsActivity.class);
                                         startActivity(intent);
                                     } else {
-                                        songClickListener((SongFileView) v);
+//                                        songClickListener((SongFileView) v);
+										startActivity(_songDetailsIntent);
                                     }
                                 }
                             }
@@ -255,6 +215,26 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer.addView(view);
         }
     }
+
+	private void setupViewData(Context context, File songFile, SongFileView view)
+	{
+		MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFile);
+
+		view.setNameTextSize(MusicPlayerUtil.spToPx(17, context));
+		view.setArtistAlbumNameTextSize(MusicPlayerUtil.spToPx(15, context));
+
+		view.setFileDisplayAlbumName(metadata.albumName);
+		view.setFileDisplayArtistName(metadata.artistName);
+		view.setImage(metadata.image);
+		view.setReferenceFile(songFile);
+
+		String title = metadata.title;
+		view.setFileDisplayName(
+				title.equals(MetaDataWrapperUtil.UNKNOWN_TITLE)
+						? songFile.getName()
+						: title);
+
+	}
 
     private void songClickListener(SongFileView songFileView) {
         if (_songWrapper == null) return;

@@ -3,7 +3,7 @@ package com.example.musicplayer;
 import android.graphics.Bitmap;
 import android.os.Build;
 
-class MP3Metadata
+public class MP3Metadata
 {
 	public MP3Metadata()
 	{
