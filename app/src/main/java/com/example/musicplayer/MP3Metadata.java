@@ -2,11 +2,46 @@ package com.example.musicplayer;
 
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-class MP3Metadata
-{
+public class MP3Metadata implements Parcelable {
 	public MP3Metadata()
 	{
+	}
+
+	protected MP3Metadata(Parcel in) {
+		title = in.readString();
+		artistName = in.readString();
+		genreName = in.readString();
+		albumName = in.readString();
+		image = in.readParcelable(Bitmap.class.getClassLoader());
+	}
+
+	public static final Creator<MP3Metadata> CREATOR = new Creator<MP3Metadata>() {
+		@Override
+		public MP3Metadata createFromParcel(Parcel in) {
+			return new MP3Metadata(in);
+		}
+
+		@Override
+		public MP3Metadata[] newArray(int size) {
+			return new MP3Metadata[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(title);
+		dest.writeString(artistName);
+		dest.writeString(genreName);
+		dest.writeString(albumName);
+		dest.writeParcelable(image, flags);
 	}
 
 	public static class Builder
