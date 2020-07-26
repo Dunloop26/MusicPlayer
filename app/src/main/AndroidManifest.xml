@@ -17,7 +17,7 @@
         <activity android:name=".activities.SongOptionsActivity"
             android:theme="@style/AppTheme.SongOptionsTheme">
         </activity>
-        <activity android:name=".TestActivity">
+        <activity android:name=".activities.TestActivity">
         </activity>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SongDetailsActivity"></activity>
+        <activity android:name=".activities.SongDetailsActivity"></activity>
     </application>
 
 </manifest>
