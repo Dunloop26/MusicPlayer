@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MusicPlayer</string>
     <string name="search">Search</string>
+    <string name="song_image_string">Song Image</string>
 </resources>
