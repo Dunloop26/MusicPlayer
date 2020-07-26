@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
             _fileViewContainer = findViewById(R.id.songListContainer);
         }
 
-        int length = files.length;
+//        int length = files.length;
+        int length = 1;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
@@ -125,60 +126,80 @@ public class MainActivity extends AppCompatActivity {
 //            });
 
             view.setOnTouchListener(new View.OnTouchListener() {
+
                 private long tInicio = 0;
                 private long tFinal = 0;
                 private long tDiferencia = 0;
+
                 private boolean cancelado = false;
                 private boolean moreOptions = false;
                 private boolean animation = false;
-                private Handler mHandler;
-                private boolean presionado = true;
+				private boolean presionado = true;
+
+				private int xIni;
+				private int yIni;
+
+				private Handler mHandler;
 
                 @Override
                 public boolean onTouch(View v, final MotionEvent event) {
                     int eventAction = event.getAction();
+					int xAct;
+					int yAct;
 
                     switch (eventAction) {
                         case MotionEvent.ACTION_DOWN:
-                            Log.d("Contiene", "DOWN");
 
                             cancelado = false;
+							presionado = false;
 
-                            if(!cancelado)
-                            {
-                                tInicio = System.currentTimeMillis();
-                                int xx = (int) event.getX();
-                                int yy = (int) event.getY();
-                                if (view.getRectMoreOptions().contains(xx, yy))
-                                {
-                                    moreOptions = true;
-                                    animation = false;
-                                }
-                                else
-                                {
-                                    animation = true;
-                                    moreOptions = false;
-                                    view.animateHoldTouched();
-                                    Log.d("Contiene", "Se anima");
-                                    if (mHandler == null)
-                                    {
-                                        Log.d("Contiene", "Se ejecuta");
-                                        Log.d("Contiene", "Cancelado: " + cancelado);
-                                        presionado = true;
-                                        mHandler = new Handler();
-                                        mHandler.postDelayed(mAction, 505);
+							tInicio = System.currentTimeMillis();
+							xIni = (int) event.getX();
+							yIni = (int) event.getY();
+							if (view.getRectMoreOptions().contains(xIni, yIni))
+							{
+								moreOptions = true;
+								animation = false;
+							}
+							else
+							{
+								animation = true;
+								moreOptions = false;
+								view.animateHoldTouched();
+								if (mHandler == null)
+								{
+									presionado = true;
+									mHandler = new Handler();
+									mHandler.postDelayed(mAction, 505);
 
-                                    }
-                                }
-
-                            }
-                            else
-                                cancelado = false;
+								}
+							}
                             break;
+
+						case MotionEvent.ACTION_MOVE:
+
+							xAct = (int) event.getX();
+							yAct = (int) event.getY();
+
+							if(!cancelado)
+							{
+								if(Math.abs(xIni - xAct) > 50 || Math.abs(yIni - yAct) > 50)
+								{
+									cancelado = true;
+									mHandler = null;
+									moreOptions = false;
+									presionado = false;
+									animation = false;
+									view.animateReleaseTouched();
+								}
+							}
+
+							break;
 
                         case MotionEvent.ACTION_CANCEL:
                             view.animateReleaseTouched();
                             cancelado = true;
+                            mHandler = null;
                             break;
 
                         case MotionEvent.ACTION_UP:
@@ -213,11 +234,11 @@ public class MainActivity extends AppCompatActivity {
                         if(!cancelado && presionado)
                         {
                             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                            // Vibrate for 500 milliseconds
+                            // Vibrate for 30 milliseconds
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 v.vibrate(VibrationEffect.createOneShot(30, VibrationEffect.EFFECT_TICK));
                             } else {
-                                //deprecated in API 26
+                                //deprecated in API 26 or higher
                                 v.vibrate(30);
                             }
                             Toast.makeText(MainActivity.this, "This is my Toast message!",
