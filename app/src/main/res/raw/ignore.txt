@@ -1,3 +1,2 @@
 /storage/emulated/0/Android
 /storage/emulated/0/MIUI/sound_recorder
-/storage/emulated/0/WhatsApp/
