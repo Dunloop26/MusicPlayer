@@ -5,7 +5,12 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+<<<<<<< HEAD
+public class MP3Metadata
+{
+=======
 public class MP3Metadata implements Parcelable {
+>>>>>>> 5c50c0d48686202c79ce772dacec26892380d46b
 	public MP3Metadata()
 	{
 	}

@@ -14,12 +14,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< HEAD
         <activity android:name=".activities.SongOptionsActivity"
             android:theme="@style/AppTheme.SongOptionsTheme">
         </activity>
         <activity android:name=".TestActivity">
         </activity>
         <activity android:name=".activities.MainActivity">
+=======
+        <activity android:name=".activity.TestActivity">
+        </activity>
+        <activity android:name=".activity.MainActivity">
+>>>>>>> 5c50c0d48686202c79ce772dacec26892380d46b
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

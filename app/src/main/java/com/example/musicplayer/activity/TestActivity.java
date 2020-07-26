@@ -1,4 +1,4 @@
-package com.example.musicplayer;
+package com.example.musicplayer.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+
+import com.example.musicplayer.R;
 
 public class TestActivity extends AppCompatActivity {
 
