@@ -90,7 +90,7 @@ public class SongWrapper {
             });
         } else {
 
-            // Reseteo el player, para definir la
+            // Reseteo el player, para definir la nueva canción
             _player.reset();
         }
 
@@ -119,6 +119,20 @@ public class SongWrapper {
     public File getCurrentSongFile()
     {
         return _currentSongFile;
+    }
+
+    public int getMediaDuration()
+    {
+        if(_player == null) _player = getMediaPlayer();
+        if(!_player.isPlaying()) return -1;
+        return _player.getDuration();
+    }
+
+    public int getMediaCurrentPosition()
+    {
+        if(_player == null) _player = getMediaPlayer();
+        if(!_player.isPlaying()) return -1;
+        return _player.getCurrentPosition();
     }
 
     public void play(File songFile) {
