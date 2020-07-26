@@ -1,7 +1,6 @@
-package com.example.musicplayer.activity;
+package com.example.musicplayer.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +15,8 @@ import com.example.musicplayer.SongWrapper;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import kotlin.Metadata;
 
 public class SongDetailsActivity extends AppCompatActivity
 {
@@ -66,8 +67,6 @@ public class SongDetailsActivity extends AppCompatActivity
         {
             double minutes =(double) TimeUnit.MILLISECONDS.toMinutes(songDuration);
             int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(songDuration) - (int)(minutes * 60);
-
-            Log.d("DEBUG",  String.format("Minutes: %s Seconds: %s", minutes, seconds));
 
             _songLengthTextView.setText(String.format("%d:%02d",(int) Math.floor(minutes), seconds));
         }
