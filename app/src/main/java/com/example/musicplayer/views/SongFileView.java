@@ -2,6 +2,7 @@ package com.example.musicplayer.views;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,11 +13,15 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -24,6 +29,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.musicplayer.R;
+import com.example.musicplayer.activities.MainActivity;
+import com.example.musicplayer.activities.SongOptionsActivity;
 import com.example.musicplayer.util.MusicPlayerUtil;
 
 import java.io.File;
@@ -131,16 +138,13 @@ public class SongFileView extends View {
 	public SongFileView(Context context) {
 		super(context);
 		_context = context;
-		DEFAULT_NAME_TEXT_SIZE = MusicPlayerUtil.spToPx(17, _context);
-		DEFAULT_ARTIST_ALBUM_TEXT_SIZE = MusicPlayerUtil.spToPx(15, _context);
 		init(null);
 	}
 
 	public SongFileView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		_context = context;
-		DEFAULT_NAME_TEXT_SIZE = MusicPlayerUtil.spToPx(17, _context);
-		DEFAULT_ARTIST_ALBUM_TEXT_SIZE = MusicPlayerUtil.spToPx(15, _context);
+
 		init(attrs);
 
 	}
@@ -152,6 +156,9 @@ public class SongFileView extends View {
 
 
 
+
+		DEFAULT_NAME_TEXT_SIZE = MusicPlayerUtil.spToPx(17, _context);
+		DEFAULT_ARTIST_ALBUM_TEXT_SIZE = MusicPlayerUtil.spToPx(15, _context);
 
 		// Obtencion de datos
 		TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.SongFileView, 0, 0);
@@ -211,8 +218,8 @@ public class SongFileView extends View {
 		if(_image == null)
 			_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
 
-
 		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.three_dot_xxhdpi);
+
 		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
@@ -238,12 +245,15 @@ public class SongFileView extends View {
 
 	}
 
-
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
 		_painter.setColor(_backgroundDisplayColor);
+
+
+
+
 
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
@@ -333,6 +343,48 @@ public class SongFileView extends View {
 		animator.start();
 	}
 
+	public void animateHoldTouched()
+	{
+		ValueAnimator animator = ValueAnimator.ofInt(0, 50);
+		animator.setDuration(250);
+		animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				int value = (int) animation.getAnimatedValue();
+				_backgroundDisplayColor = Color.rgb(255 - value, 255 - value, 255 - value);
+				invalidate();
+			}
+		});
+
+		animator.start();
+	}
+
+	public void animateReleaseTouched()
+	{
+		ValueAnimator animator = ValueAnimator.ofInt(50, 0);
+		animator.setDuration(250);
+		animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				int value = (int) animation.getAnimatedValue();
+				_backgroundDisplayColor = Color.rgb(255 - value, 255 - value, 255 - value);
+				invalidate();
+			}
+		});
+
+		animator.start();
+	}
+
+	public Rect getRectMoreOptions()
+	{
+		Rect r = new Rect();
+		r.left = (int) (getWidth() - (getImageMargin() * 2) - getMoreOptionsImage().getHeight());
+		r.top = 0;
+		r.right = (int) (getWidth() - (getImageMargin() * 2) + getMoreOptionsImage().getHeight());
+		r.bottom = getHeight();
+		return r;
+	}
+
 	public File getReferenceFile() {
 		return _referenceFile;
 	}
@@ -347,6 +399,15 @@ public class SongFileView extends View {
 
 	public void setArtistAlbumNameTextSize(float artistAlbumNameTextSize) {
 		_artistAlbumNameTextSize = artistAlbumNameTextSize;
+	}
+
+	public float getImageMargin()
+	{
+		return _imageMargin;
+	}
+
+	public Bitmap getMoreOptionsImage() {
+		return _moreOptionsImage;
 	}
 
 	public String getFileDisplayTitle() {
