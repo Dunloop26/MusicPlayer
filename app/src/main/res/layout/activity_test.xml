@@ -7,13 +7,17 @@
     tools:context=".TestActivity">
 
     <com.example.musicplayer.views.SongFileView
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
         android:layout_width="360dp"
-        app:nameTextSize="17sp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
         app:artistAlbumNameTextSize="15sp"
-        android:layout_height="80dp"/>
+        app:nameTextSize="17sp" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/three_dot_xxhdpi" />
 
 
 </RelativeLayout>

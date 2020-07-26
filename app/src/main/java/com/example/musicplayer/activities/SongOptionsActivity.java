@@ -36,7 +36,7 @@ public class SongOptionsActivity extends AppCompatActivity {
         WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) view.getLayoutParams();
         layoutParams.gravity = Gravity.BOTTOM;
         layoutParams.width = width;
-        layoutParams.height = (int) (height * 0.6f);
+        layoutParams.height = (int) (height * 0.55f);
         getWindowManager().updateViewLayout(view, layoutParams);
     }
 }

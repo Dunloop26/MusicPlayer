@@ -2,7 +2,11 @@ package com.example.musicplayer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -10,5 +14,9 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+
+        ImageView image = (ImageView) findViewById(R.id.imageView);
+        int newColor = getResources().getColor(R.color.colorLightModePrimaryText);
+        image.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
     }
 }

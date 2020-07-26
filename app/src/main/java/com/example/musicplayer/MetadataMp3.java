@@ -16,6 +16,7 @@ public class MetadataMp3
 	private String _genreName;
 	private String _title;
 	private File _mp3File;
+
 	public MetadataMp3(File mp3File)
 	{
 		_mp3File = mp3File;
