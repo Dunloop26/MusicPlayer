@@ -1,4 +1,4 @@
-package com.example.musicplayer;
+package com.example.musicplayer.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,8 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.musicplayer.FileSearcher;
+import com.example.musicplayer.MP3Metadata;
+import com.example.musicplayer.MetaDataWrapperUtil;
+import com.example.musicplayer.MusicApplication;
+import com.example.musicplayer.R;
+import com.example.musicplayer.SongWrapper;
 import com.example.musicplayer.views.SongFileView;
 
 import java.io.File;
@@ -30,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Button btn = findViewById(R.id.btnBuscar);
 
         if(_songDetailsIntent == null)
-            _songDetailsIntent = new Intent(this, MainActivity.class);
+            _songDetailsIntent = new Intent(this, SongDetailsActivity.class);
 
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -43,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 debugFileSearcher();
             }
         });
-        _songWrapper = new SongWrapper();
+        _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
 
     }
 
@@ -112,11 +119,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void songClickListener(SongFileView songFileView) {
         if (_songWrapper == null) return;
+        _songWrapper.play(songFileView.getReferenceFile());
+        MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFileView.getReferenceFile());
 
-//        _songWrapper.play(songFileView.getReferenceFile());
-//        startActivity(_songDetailsIntent, );
+        Bundle options = new Bundle();
+        options.putParcelable(SongDetailsActivity.BUNDLE_SONG_METADATA, metadata);
+        startActivity(_songDetailsIntent, options);
     }
 
     public static int dpToPx(float dp, Context context) {
