@@ -11,7 +11,7 @@ public class MusicApplication extends Application {
     //  no están pensados para su uso con la clase
     private SongWrapper _songWrapper;
 
-    public SongWrapper GetSongWrapper()
+    public SongWrapper getSongWrapper()
     {
         if(_songWrapper == null) _songWrapper = new SongWrapper();
         return _songWrapper;
