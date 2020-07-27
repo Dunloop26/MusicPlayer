@@ -131,6 +131,7 @@ public class SongWrapper {
     public int getMediaCurrentPosition()
     {
         if(_player == null) _player = getMediaPlayer();
+        _player.stop();
         if(!_player.isPlaying()) return -1;
         return _player.getCurrentPosition();
     }
@@ -159,6 +160,56 @@ public class SongWrapper {
         _currentSongFile = songFile;
 
     }
+
+    public void play(File songFile, int msec)
+    {
+        // Si la no canción existe
+        if (!songFile.exists()) return;
+        if(_player == null) return;
+
+        // Si está reproduciendo una canción la detengo
+        if (_player.isPlaying()) _player.pause();
+
+        // Preparo para reproducir la canción
+        _prepareForPlay = true;
+        int duration = _player.getDuration();
+        Log.d("MandarArchivo", "duracion: " + duration);
+        Log.d("MandarArchivo", "reproducir de: " + msec);
+        if(msec < 0)
+            _player.seekTo(0);
+        else if(msec > duration)
+            _player.seekTo(duration);
+        else
+            _player.seekTo(msec);
+
+        _player.start();
+
+        // Defino el archivo actual para reproducción
+        _currentSongFile = songFile;
+    }
+
+    public void continuePlaying()
+    {
+        // Si la no canción existe
+        if (!_currentSongFile.exists()) return;
+        if(_player == null) return;
+
+        if(_player.isPlaying())
+            _player.pause();
+        else
+            _player.start();
+    }
+
+    public void setCurrentSongFile(File currentSongFile) {
+        _currentSongFile = currentSongFile;
+    }
+
+    public void continueReproduction()
+    {
+        play(_currentSongFile, _player.getCurrentPosition());
+    }
+
+
 
     public void play(String filepath) {
         // TODO: Encubrir en un try-catch para evitar potenciales errores al no encontrar la ruta del archivo
