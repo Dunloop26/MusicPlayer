@@ -1,10 +1,12 @@
-package com.example.musicplayer;
+package com.example.musicplayer.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadata;
 import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
+
+import com.example.musicplayer.MP3Metadata;
 
 import java.io.File;
 import java.io.FileDescriptor;
