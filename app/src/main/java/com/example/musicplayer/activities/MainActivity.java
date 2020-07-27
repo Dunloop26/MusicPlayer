@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ import android.widget.Toast;
 
 import com.example.musicplayer.FileSearcher;
 import com.example.musicplayer.MP3Metadata;
-import com.example.musicplayer.MetaDataWrapperUtil;
+import com.example.musicplayer.util.MetaDataWrapperUtil;
 import com.example.musicplayer.MusicApplication;
 import com.example.musicplayer.R;
 import com.example.musicplayer.SongWrapper;
@@ -42,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button btn = findViewById(R.id.btnBuscar);
 
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= 23)
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-        }
 
 		if(_songDetailsIntent == null)
 			_songDetailsIntent = new Intent(this, SongDetailsActivity.class);
@@ -70,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void createFileView(File[] files) {
-        if (_fileViewContainer == null) {
+        if (_fileViewContainer == null)
             _fileViewContainer = findViewById(R.id.songListContainer);
-        }
 
 		_fileViewContainer.removeAllViews();
 
@@ -172,9 +171,7 @@ public class MainActivity extends AppCompatActivity {
 									moreOptions = false;
 									presionado = false;
 									if(animation)
-									{
 										view.animateReleaseTouched();
-									}
 									animation = false;
 									if(mHandler == null) return true;
 									mHandler.removeCallbacks(mAction);
@@ -199,9 +196,8 @@ public class MainActivity extends AppCompatActivity {
                         case MotionEvent.ACTION_UP:
                             tFinal = System.currentTimeMillis();
                             tDiferencia = tFinal - tInicio;
-                            if(animation) {
+                            if(animation)
 								view.animateReleaseTouched();
-							}
 
                             if(!cancelado)
                             {
@@ -239,9 +235,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "This is my Toast message!",
                                     Toast.LENGTH_LONG).show();
                             if(animation)
-                            {
 								view.animateReleaseTouched();
-							}
                             animation = false;
                         }
                     }
@@ -279,6 +273,10 @@ public class MainActivity extends AppCompatActivity {
 		if (_songWrapper == null) return;
 		_songWrapper.play(songFileView.getReferenceFile());
 		MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFileView.getReferenceFile());
+
+		Log.d("MandarArchivo", "Hola!");
+		Log.d("MandarArchivo", (_songWrapper.getCurrentSongFile().getName() == null) + "");
+
 
 		Bundle options = new Bundle();
 		options.putParcelable(SongDetailsActivity.BUNDLE_SONG_METADATA, metadata);
