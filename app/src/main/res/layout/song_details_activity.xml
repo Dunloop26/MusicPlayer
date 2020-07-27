@@ -8,64 +8,97 @@
 
     <ImageView
         android:id="@+id/songDetails_imageSongCover"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="233dp"
+        android:layout_height="224dp"
         android:layout_margin="80dp"
         android:contentDescription="@string/song_image_string"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.437"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35"
+        app:layout_constraintVertical_bias="0.231"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/songDetails_textViewSongName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="16dp"
         android:text="Song Name"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songDetails_imageSongCover" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/songDetails_buttonPlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginBottom="80dp"
         android:text="Play"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songDetails_textViewSongDuration" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/songDetails_buttonPrev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
         android:text="Prev"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/songDetails_buttonPlay"
-        app:layout_constraintTop_toTopOf="@+id/songDetails_buttonPlay" />
+        app:layout_constraintTop_toTopOf="@+id/songDetails_buttonPlay"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/songDetails_buttonNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:text="Next"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/songDetails_buttonPlay"
-        app:layout_constraintTop_toTopOf="@+id/songDetails_buttonPlay" />
+        app:layout_constraintTop_toTopOf="@+id/songDetails_buttonPlay"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/songDetails_textViewSongDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
         android:text="0:00"
+        app:layout_constraintBottom_toTopOf="@+id/songDetails_buttonPlay"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songDetails_reproductionBar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/songDetails_textViewSongCurrentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginLeft="36dp"
+        android:text="0:00"
+        app:layout_constraintBottom_toTopOf="@+id/songDetails_buttonPlay"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songDetails_textViewSongName" />
+        app:layout_constraintTop_toBottomOf="@+id/songDetails_reproductionBar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <SeekBar
+        android:id="@+id/songDetails_reproductionBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="36dp"
+        app:layout_constraintBottom_toTopOf="@+id/songDetails_buttonPlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
