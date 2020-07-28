@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
 		_fileViewContainer.removeAllViews();
 
-        int length = files.length;
+//        int length = files.length;
+		int length = 4;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
             File currentFile = files[fileIndex];
 
