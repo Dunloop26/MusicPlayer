@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -206,7 +207,7 @@ public class SongFileView extends View {
 		if(_image == null)
 			_image = BitmapFactory.decodeResource(getResources(), R.drawable.logo1);
 
-		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.three_dot_xxhdpi);
+		_moreOptionsImage = BitmapFactory.decodeResource(getResources(), R.drawable.three_dot);
 
 		getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
@@ -221,10 +222,10 @@ public class SongFileView extends View {
 				_imageMargin = ((float)getHeight()) * DEFAULT_IMAGE_MARGIN_RELATION;
 				_imageSize = getHeight() - ((int) (_imageMargin * 2));
 				_image = getResizeBitMap(_image, _imageSize, _imageSize);
-				int moreOptHeight = (int)(getHeight() - (getHeight() * 0.3f));
+				int moreOptHeight = (int)(getHeight() - (getHeight() * 0.8f));
 
-				int moreOptWidth = (int) (moreOptHeight * _moreOptionsImage.getWidth() / _moreOptionsImage.getHeight());
-				_moreOptionsImage = getResizeBitMap(_moreOptionsImage, moreOptHeight, moreOptWidth);
+				int moreOptWidth = moreOptHeight * _moreOptionsImage.getWidth() / _moreOptionsImage.getHeight();
+				_moreOptionsImage = getResizeBitMap(_moreOptionsImage, moreOptWidth, moreOptHeight);
 
 			}
 
@@ -239,12 +240,9 @@ public class SongFileView extends View {
 
 		_painter.setColor(_backgroundDisplayColor);
 
-
-
-
-
 		getDrawingRect(_drawingRect);
 		canvas.drawRect(_drawingRect, _painter);
+
 
 		// Se dibuja la imagen de la caratula
 		canvas.drawBitmap(_image, _imageMargin, _imageMargin, null);
@@ -253,6 +251,8 @@ public class SongFileView extends View {
 		canvas.drawBitmap(_moreOptionsImage,
 				getWidth() - (_imageMargin * 2) - _moreOptionsImage.getWidth(),
 				(getHeight() / 2) - (_moreOptionsImage.getHeight() / 2), _painter);
+
+
 
 		_painter.setColor(_fontDisplayTitleColor);
 		_painter.setTextSize(_nameTextSize);
@@ -274,6 +274,9 @@ public class SongFileView extends View {
 				_imageSize + ((int) (_imageMargin * 2)),
 				(((_imageSize / 4f) + (_imageSize / 2f)) + _imageMargin) + (_imageSize * 0.1f),
 				canvas);
+
+
+
 	}
 
 	/**
@@ -365,10 +368,11 @@ public class SongFileView extends View {
 
 	public Rect getRectMoreOptions()
 	{
+		float ofset = 4f;
 		Rect r = new Rect();
-		r.left = (int) (getWidth() - (getImageMargin() * 2) - getMoreOptionsImage().getHeight());
+		r.left = (int) ((getWidth() - (_imageMargin * 2) - _moreOptionsImage.getWidth()) - (_moreOptionsImage.getWidth() * ofset));
 		r.top = 0;
-		r.right = (int) (getWidth() - (getImageMargin() * 2) + getMoreOptionsImage().getHeight());
+		r.right = (int) ((getWidth() - (_imageMargin * 2)) + (_moreOptionsImage.getWidth() * ofset));
 		r.bottom = getHeight();
 		return r;
 	}
