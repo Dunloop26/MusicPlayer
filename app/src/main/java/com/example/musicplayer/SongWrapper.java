@@ -88,6 +88,12 @@ public class SongWrapper {
                     onPrepareAsyncMediaPlayer(mp);
                 }
             });
+            _player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+
+                }
+            });
         } else {
 
             // Reseteo el player, para definir la nueva canción
@@ -131,9 +137,11 @@ public class SongWrapper {
     public int getMediaCurrentPosition()
     {
         if(_player == null) _player = getMediaPlayer();
-        _player.stop();
-        if(!_player.isPlaying()) return -1;
         return _player.getCurrentPosition();
+    }
+
+    public MediaPlayer getPlayer() {
+        return _player;
     }
 
     public void play(File songFile) {
@@ -186,6 +194,11 @@ public class SongWrapper {
 
         // Defino el archivo actual para reproducción
         _currentSongFile = songFile;
+    }
+
+    public boolean isPlaying()
+    {
+        return _player.isPlaying();
     }
 
     public void continuePlaying()
