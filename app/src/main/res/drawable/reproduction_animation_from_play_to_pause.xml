@@ -1,0 +1,9 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="true">
+    <item android:drawable="@drawable/play_song" android:duration="10" />
+    <item android:drawable="@drawable/pause5" android:duration="10" />
+    <item android:drawable="@drawable/pause4" android:duration="10" />
+    <item android:drawable="@drawable/pause3" android:duration="10" />
+    <item android:drawable="@drawable/pause2" android:duration="10" />
+    <item android:drawable="@drawable/pause_song" android:duration="10" />
+</animation-list>
