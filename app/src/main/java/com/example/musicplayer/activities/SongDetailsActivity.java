@@ -1,14 +1,17 @@
 package com.example.musicplayer.activities;
 
+import android.annotation.SuppressLint;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,8 +22,6 @@ import com.example.musicplayer.R;
 import com.example.musicplayer.SongWrapper;
 import com.example.musicplayer.util.MusicPlayerUtil;
 
-import java.util.concurrent.TimeUnit;
-
 public class SongDetailsActivity extends AppCompatActivity
 {
     public final static String BUNDLE_SONG_METADATA = "song_metadata";
@@ -28,14 +29,28 @@ public class SongDetailsActivity extends AppCompatActivity
 
     private TextView _songNameTextView;
     private TextView _songLengthTextView;
-    private TextView _songCurrentTIme;
+    private TextView _songCurrentTimeTextView;
     private ImageView _songCoverImageView;
     private SeekBar _reproductionBar;
 
-    private Button _btnPlay;
+    private ImageView _playImageView;
+    private ImageView _prevImageView;
+    private ImageView _nextImageView;
 
     private MP3Metadata _metadata;
 
+    private Handler _handler;
+
+    private int _songDuration;
+    private AnimationDrawable _animationFromPauseToPlay;
+    private AnimationDrawable _animationFromPlayToPause;
+
+    private boolean _fromPauseToPlay;
+    private boolean _draggedFromUser;
+    private boolean _changeFromUser;
+
+
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +59,61 @@ public class SongDetailsActivity extends AppCompatActivity
         _songCoverImageView = findViewById(R.id.songDetails_imageSongCover);
         _songNameTextView = findViewById(R.id.songDetails_textViewSongName);
         _songLengthTextView = findViewById(R.id.songDetails_textViewSongDuration);
-        _songCurrentTIme = findViewById(R.id.songDetails_textViewSongCurrentTime);
+        _songCurrentTimeTextView = findViewById(R.id.songDetails_textViewSongCurrentTime);
         _reproductionBar = findViewById(R.id.songDetails_reproductionBar);
         _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
-        _btnPlay = findViewById(R.id.songDetails_buttonPlay);
+        _playImageView = findViewById(R.id.songDetails_buttonPlay);
+        _prevImageView = findViewById(R.id.songDetails_buttonPrev);
+        _nextImageView = findViewById(R.id.songDetails_buttonNext);
 
-        _btnPlay.setOnClickListener(new View.OnClickListener() {
+        _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_pause_to_play);
+        _prevImageView.setBackgroundResource(R.drawable.prev);
+        _nextImageView.setBackgroundResource(R.drawable.next);
+
+        _draggedFromUser = false;
+        _changeFromUser = false;
+        _fromPauseToPlay = true;
+
+
+        _animationFromPauseToPlay = (AnimationDrawable) _playImageView.getBackground();
+
+        _songDuration = _songWrapper.getMediaDuration();
+
+        _handler = new Handler()
+        {
+            @SuppressLint("HandlerLeak")
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                _songCurrentTimeTextView.setText(MusicPlayerUtil.getFormatTimeFromMilliseconds(msg.what));
+                _reproductionBar.setProgress(msg.what);
+            }
+        };
+
+        _playImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(_fromPauseToPlay)
+                {
+                    if(_songWrapper.isPlaying())
+                    {
+                        _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_pause_to_play);
+                        _animationFromPauseToPlay = (AnimationDrawable) _playImageView.getBackground();
+                        _animationFromPauseToPlay.setVisible(false, true);
+                        _animationFromPauseToPlay.start();
+                        _fromPauseToPlay = false;
+                    }
+                }
+                else
+                {
+                    if(!_songWrapper.isPlaying())
+                    {
+                        _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_play_to_pause);
+                        _animationFromPlayToPause = (AnimationDrawable) _playImageView.getBackground();
+                        _animationFromPlayToPause.setVisible(false, true);
+                        _animationFromPlayToPause.start();
+                        _fromPauseToPlay = true;
+                    }
+                }
                 _songWrapper.continuePlaying();
             }
         });
@@ -59,15 +121,23 @@ public class SongDetailsActivity extends AppCompatActivity
         _reproductionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser)
+                {
+                    _songCurrentTimeTextView.setText(MusicPlayerUtil.getFormatTimeFromMilliseconds(_reproductionBar.getProgress()));
+                    _draggedFromUser = true;
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                _draggedFromUser = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                _draggedFromUser = false;
                 _songWrapper.play(_songWrapper.getCurrentSongFile(), _reproductionBar.getProgress());
+                _changeFromUser = true;
             }
         });
 
@@ -82,6 +152,39 @@ public class SongDetailsActivity extends AppCompatActivity
         }
 
         updateInformation(_metadata);
+        updateReproductionBar();
+    }
+
+    public void updateReproductionBar()
+    {
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                while(_songWrapper != null)
+                {
+                    if(_songWrapper.isPlaying() && !_draggedFromUser)
+                    {
+
+                        try {
+                            Message message = new Message();
+                            message.what = _songWrapper.getMediaCurrentPosition();
+                            _handler.sendMessage(message);
+                            if(_changeFromUser)
+                            {
+                                Thread.sleep(100);
+                                _changeFromUser = false;
+                            }
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.start();
+
     }
 
     @Override
@@ -107,12 +210,13 @@ public class SongDetailsActivity extends AppCompatActivity
                 _songCoverImageView.setImageBitmap(metadata.image);
         }
 
-        int songDuration = _songWrapper.getMediaDuration();
-        _reproductionBar.setMax(songDuration);
-        if(_songLengthTextView != null && songDuration != -1)
+        _reproductionBar.setMax(_songDuration);
+        if(_songLengthTextView != null && _songDuration != -1)
         {
-            _songLengthTextView.setText(MusicPlayerUtil.getFormatTimeFromMilliseconds(songDuration));
+            _songLengthTextView.setText(MusicPlayerUtil.getFormatTimeFromMilliseconds(_songDuration));
         }
     }
+
+
 }
 
