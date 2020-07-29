@@ -37,6 +37,15 @@ public class PlayList {
 		}
 	}
 
+	public void decreaseSongIndex()
+	{
+		_indexCurrentSong--;
+		if(_indexCurrentSong < 0)
+		{
+			_indexCurrentSong = _songs.size() - 1;
+		}
+	}
+
 	public File getCurrentSong()
 	{
 		return _songs.get(_indexCurrentSong);
