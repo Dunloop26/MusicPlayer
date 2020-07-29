@@ -1,7 +1,6 @@
 package com.example.musicplayer.util;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.TypedValue;
 
 import java.util.concurrent.TimeUnit;
