@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.musicplayer.FileSearcher;
 import com.example.musicplayer.MP3Metadata;
+import com.example.musicplayer.PlayList;
 import com.example.musicplayer.util.MetaDataWrapperUtil;
 import com.example.musicplayer.MusicApplication;
 import com.example.musicplayer.R;
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewGroup _fileViewContainer;
     private SongWrapper _songWrapper;
 	private Intent _songDetailsIntent;
+	private PlayList _playList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         _songWrapper = ((MusicApplication) getApplication()).getSongWrapper();
+        _playList = ((MusicApplication) getApplication()).getPlayList();
 
+        _songWrapper.addOnSongChangeActionListener(new SongWrapper.OnSongChangeActionListener() {
+			@Override
+			public void onSongChangeAction(SongWrapper sw, File file) {
+				onPlayListSongChangeAction(sw, file);
+			}
+		});
     }
 
     private void debugFileSearcher() {
@@ -67,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         createFileView(files);
     }
 
-
+    int indexSong;
     @SuppressLint("ClickableViewAccessibility")
     private void createFileView(File[] files) {
         if (_fileViewContainer == null)
@@ -78,7 +86,11 @@ public class MainActivity extends AppCompatActivity {
 //        int length = files.length;
 		int length = 4;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
+
+        	indexSong = fileIndex;
+
             File currentFile = files[fileIndex];
+			_playList.addSong(currentFile);
 
             if (currentFile == null) continue;
             if (!currentFile.canRead()) continue;
@@ -273,10 +285,8 @@ public class MainActivity extends AppCompatActivity {
 	private void songClickListener(SongFileView songFileView) {
 		if (_songWrapper == null) return;
 		_songWrapper.play(songFileView.getReferenceFile());
+		_playList.setIndexFromSong(songFileView.getReferenceFile());
 		MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(songFileView.getReferenceFile());
-
-		Log.d("MandarArchivo", "Hola!");
-		Log.d("MandarArchivo", (_songWrapper.getCurrentSongFile().getName() == null) + "");
 
 
 		Bundle options = new Bundle();
@@ -284,5 +294,10 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(_songDetailsIntent, options);
 	}
 
+	public void onPlayListSongChangeAction(SongWrapper sw, File file) {
+		_playList.increaseSongIndex();
+		file = _playList.getCurrentSong();
 
+		_songWrapper.play(file);
+	}
 }
