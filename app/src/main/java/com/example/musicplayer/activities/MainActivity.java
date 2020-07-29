@@ -83,8 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 		_fileViewContainer.removeAllViews();
 
-//        int length = files.length;
-		int length = 4;
+        int length = files.length;
         for (int fileIndex = 0; fileIndex < length; fileIndex++) {
 
         	indexSong = fileIndex;

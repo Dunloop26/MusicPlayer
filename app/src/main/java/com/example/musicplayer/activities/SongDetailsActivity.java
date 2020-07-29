@@ -2,19 +2,23 @@ package com.example.musicplayer.activities;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musicplayer.MP3Metadata;
+import com.example.musicplayer.PlayList;
 import com.example.musicplayer.util.MetaDataWrapperUtil;
 import com.example.musicplayer.MusicApplication;
 import com.example.musicplayer.R;
@@ -27,6 +31,7 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 {
     public final static String BUNDLE_SONG_METADATA = "song_metadata";
     private SongWrapper _songWrapper;
+    private PlayList _playList;
 
     private TextView _songNameTextView;
     private TextView _songLengthTextView;
@@ -46,8 +51,10 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
     private Runnable _changeSongRunnable;
 
-    private AnimationDrawable _animationFromPauseToPlay;
-    private AnimationDrawable _animationFromPlayToPause;
+//    private AnimationDrawable _animationFromPauseToPlay;
+//    private AnimationDrawable _animationFromPlayToPause;
+//    private AnimationDrawable _animationPrev;
+//    private AnimationDrawable _animationNext;
 
     private int _songDuration;
     private boolean _fromPauseToPlay;
@@ -61,6 +68,14 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_details_activity);
 
+        _draggedFromUser = false;
+        _changeFromUser = false;
+        _fromPauseToPlay = true;
+
+        _playList = ((MusicApplication) getApplication()).getPlayList();
+        _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
+        _songWrapper.addOnSongChangeActionListener(this);
+
 
         _songCurrentTimeTextView = findViewById(R.id.songDetails_textViewSongCurrentTime);
         _songLengthTextView = findViewById(R.id.songDetails_textViewSongDuration);
@@ -72,19 +87,64 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
         _nextImageView = findViewById(R.id.songDetails_buttonNext);
 
         _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_pause_to_play);
-        _prevImageView.setBackgroundResource(R.drawable.prev);
-        _nextImageView.setBackgroundResource(R.drawable.next);
+        _prevImageView.setBackgroundResource(R.drawable.animation_prev);
+        _nextImageView.setBackgroundResource(R.drawable.animation_next);
 
-        _draggedFromUser = false;
-        _changeFromUser = false;
-        _fromPauseToPlay = true;
+        _playImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(_fromPauseToPlay)
+                {
+                    if(_songWrapper.isPlaying())
+                    {
+                        playAnimation(_playImageView, R.drawable.reproduction_animation_from_pause_to_play);
+                        _fromPauseToPlay = false;
+                    }
+                }
+                else
+                {
+                    if(!_songWrapper.isPlaying())
+                    {
+                        playAnimation(_playImageView, R.drawable.reproduction_animation_from_play_to_pause);
+                        _fromPauseToPlay = true;
+                    }
+                }
+                _songWrapper.continuePlaying();
+            }
+        });
 
 
-        _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
-        _songWrapper.addOnSongChangeActionListener(this);
+        _prevImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!_fromPauseToPlay)
+                {
+                    playAnimation(_playImageView, R.drawable.reproduction_animation_from_play_to_pause);
+                    _fromPauseToPlay = true;
 
+                }
+                playAnimation(_prevImageView, R.drawable.animation_prev);
+                _playList.decreaseSongIndex();
+                _songWrapper.play(_playList.getCurrentSong());
+                executeChangeSongHandler();
+            }
+        });
+        _nextImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!_fromPauseToPlay)
+                {
+                    playAnimation(_playImageView, R.drawable.reproduction_animation_from_play_to_pause);
+                    _fromPauseToPlay = true;
 
-        _animationFromPauseToPlay = (AnimationDrawable) _playImageView.getBackground();
+                }
+                playAnimation(_nextImageView, R.drawable.animation_next);
+                _playList.increaseSongIndex();
+                _songWrapper.play(_playList.getCurrentSong());
+                executeChangeSongHandler();
+            }
+        });
+
 
 
 
@@ -98,6 +158,7 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
             }
         };
 
+
         _changeSongRunnable = new Runnable() {
             @Override
             public void run() {
@@ -109,34 +170,7 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
             }
         };
 
-        _playImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(_fromPauseToPlay)
-                {
-                    if(_songWrapper.isPlaying())
-                    {
-                        _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_pause_to_play);
-                        _animationFromPauseToPlay = (AnimationDrawable) _playImageView.getBackground();
-                        _animationFromPauseToPlay.setVisible(false, true);
-                        _animationFromPauseToPlay.start();
-                        _fromPauseToPlay = false;
-                    }
-                }
-                else
-                {
-                    if(!_songWrapper.isPlaying())
-                    {
-                        _playImageView.setBackgroundResource(R.drawable.reproduction_animation_from_play_to_pause);
-                        _animationFromPlayToPause = (AnimationDrawable) _playImageView.getBackground();
-                        _animationFromPlayToPause.setVisible(false, true);
-                        _animationFromPlayToPause.start();
-                        _fromPauseToPlay = true;
-                    }
-                }
-                _songWrapper.continuePlaying();
-            }
-        });
+
 
         _reproductionBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -162,6 +196,8 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
         });
 
 
+
+
         if(savedInstanceState != null)
             _metadata = savedInstanceState.getParcelable(BUNDLE_SONG_METADATA);
         else
@@ -173,6 +209,14 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
         updateInformation(_metadata);
         startReproductionBarUpdateThread();
+    }
+
+    public void playAnimation(ImageView imageView, @DrawableRes int resid)
+    {
+        imageView.setBackgroundResource(resid);
+        AnimationDrawable animation = (AnimationDrawable) imageView.getBackground();
+        animation.setVisible(false, true);
+        animation.start();
     }
 
     public void startReproductionBarUpdateThread()
@@ -240,7 +284,11 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
     @Override
     public void onSongChangeAction(SongWrapper sw, File file) {
+        executeChangeSongHandler();
+    }
 
+    public void executeChangeSongHandler()
+    {
         if (_changeSongHandler == null)
             _changeSongHandler = new Handler();
         else
