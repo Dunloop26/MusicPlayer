@@ -3,7 +3,6 @@ package com.example.musicplayer;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +14,11 @@ public class SongWrapper {
 
     private File _currentSongFile;
 
+
     // Realizo la lista de listeners
     private ArrayList<OnSongPlayActionListener> _onPlayActionListeners = new ArrayList<>();
     private ArrayList<OnSongStopActionListener> _onStopActionListeners = new ArrayList<>();
+    private ArrayList<OnSongChangeActionListener> _onChangeActionListener = new ArrayList<>();
 
     public interface OnSongPlayActionListener
     {
@@ -26,6 +27,11 @@ public class SongWrapper {
     public interface OnSongStopActionListener
     {
         void onSongStopAction(SongWrapper sw, File file);
+    }
+
+    public interface OnSongChangeActionListener
+    {
+        void onSongChangeAction(SongWrapper sw, File previousFile);
     }
 
     public void addOnSongPlayActionListener(OnSongPlayActionListener listener)
@@ -40,6 +46,12 @@ public class SongWrapper {
             _onStopActionListeners.add(listener);
     }
 
+    public void addOnSongChangeActionListener(OnSongChangeActionListener listener)
+    {
+        if(listener != null)
+            _onChangeActionListener.add(listener);
+    }
+
     public void removeOnSongPlayActionListener(OnSongPlayActionListener listener)
     {
         if(listener != null)
@@ -50,6 +62,12 @@ public class SongWrapper {
     {
         if(listener != null)
             _onPlayActionListeners.remove(listener);
+    }
+
+    public void removeOnSongChangeActionListener(OnSongChangeActionListener listener)
+    {
+        if(listener != null)
+            _onChangeActionListener.remove(listener);
     }
 
     private void fireOnSongPlayActionListener(File file)
@@ -67,6 +85,15 @@ public class SongWrapper {
         {
             if(listener != null)
                 listener.onSongStopAction(this, file);
+        }
+    }
+
+    private void fireOnSongChangeListener(File file)
+    {
+        for(OnSongChangeActionListener listener : _onChangeActionListener)
+        {
+            if(listener != null)
+                listener.onSongChangeAction(this, file);
         }
     }
 
@@ -91,7 +118,7 @@ public class SongWrapper {
             _player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-
+                    fireOnSongChangeListener(getCurrentSongFile());
                 }
             });
         } else {
@@ -104,7 +131,6 @@ public class SongWrapper {
     }
 
     private boolean onMediaPlayerErrorListener(MediaPlayer mp, int what, int extra) {
-        Log.e("SongWrapper: ", String.format("An error has ocurred: MediaPlayer %s %s %s", mp, what, extra));
         return true;
     }
 
@@ -130,7 +156,6 @@ public class SongWrapper {
     public int getMediaDuration()
     {
         if(_player == null) _player = getMediaPlayer();
-        if(!_player.isPlaying()) return -1;
         return _player.getDuration();
     }
 
@@ -181,8 +206,6 @@ public class SongWrapper {
         // Preparo para reproducir la canción
         _prepareForPlay = true;
         int duration = _player.getDuration();
-        Log.d("MandarArchivo", "duracion: " + duration);
-        Log.d("MandarArchivo", "reproducir de: " + msec);
         if(msec < 0)
             _player.seekTo(0);
         else if(msec > duration)
