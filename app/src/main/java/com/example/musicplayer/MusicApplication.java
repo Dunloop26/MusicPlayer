@@ -10,10 +10,19 @@ public class MusicApplication extends Application {
     //  con un manejo de estructura que puede resultar en mejor implementación,
     //  no están pensados para su uso con la clase
     private SongWrapper _songWrapper;
+    private PlayList _playList;
+
+    // TODO: Hacer una clase que contenga los datos de sesion
 
     public SongWrapper getSongWrapper()
     {
         if(_songWrapper == null) _songWrapper = new SongWrapper();
         return _songWrapper;
+    }
+
+    public PlayList getPlayList()
+    {
+        if(_playList == null) _playList = new PlayList();
+        return _playList;
     }
 }
