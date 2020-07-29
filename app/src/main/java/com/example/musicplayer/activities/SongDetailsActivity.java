@@ -2,7 +2,6 @@ package com.example.musicplayer.activities;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,7 +21,9 @@ import com.example.musicplayer.R;
 import com.example.musicplayer.SongWrapper;
 import com.example.musicplayer.util.MusicPlayerUtil;
 
-public class SongDetailsActivity extends AppCompatActivity
+import java.io.File;
+
+public class SongDetailsActivity extends AppCompatActivity implements SongWrapper.OnSongChangeActionListener
 {
     public final static String BUNDLE_SONG_METADATA = "song_metadata";
     private SongWrapper _songWrapper;
@@ -30,21 +31,25 @@ public class SongDetailsActivity extends AppCompatActivity
     private TextView _songNameTextView;
     private TextView _songLengthTextView;
     private TextView _songCurrentTimeTextView;
-    private ImageView _songCoverImageView;
-    private SeekBar _reproductionBar;
 
+    private ImageView _songCoverImageView;
     private ImageView _playImageView;
     private ImageView _prevImageView;
     private ImageView _nextImageView;
 
+    private SeekBar _reproductionBar;
+
     private MP3Metadata _metadata;
 
-    private Handler _handler;
+    private Handler _progressBarHandler;
+    private Handler _changeSongHandler;
 
-    private int _songDuration;
+    private Runnable _changeSongRunnable;
+
     private AnimationDrawable _animationFromPauseToPlay;
     private AnimationDrawable _animationFromPlayToPause;
 
+    private int _songDuration;
     private boolean _fromPauseToPlay;
     private boolean _draggedFromUser;
     private boolean _changeFromUser;
@@ -56,12 +61,12 @@ public class SongDetailsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.song_details_activity);
 
+
+        _songCurrentTimeTextView = findViewById(R.id.songDetails_textViewSongCurrentTime);
+        _songLengthTextView = findViewById(R.id.songDetails_textViewSongDuration);
         _songCoverImageView = findViewById(R.id.songDetails_imageSongCover);
         _songNameTextView = findViewById(R.id.songDetails_textViewSongName);
-        _songLengthTextView = findViewById(R.id.songDetails_textViewSongDuration);
-        _songCurrentTimeTextView = findViewById(R.id.songDetails_textViewSongCurrentTime);
         _reproductionBar = findViewById(R.id.songDetails_reproductionBar);
-        _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
         _playImageView = findViewById(R.id.songDetails_buttonPlay);
         _prevImageView = findViewById(R.id.songDetails_buttonPrev);
         _nextImageView = findViewById(R.id.songDetails_buttonNext);
@@ -75,17 +80,32 @@ public class SongDetailsActivity extends AppCompatActivity
         _fromPauseToPlay = true;
 
 
+        _songWrapper = ((MusicApplication)getApplication()).getSongWrapper();
+        _songWrapper.addOnSongChangeActionListener(this);
+
+
         _animationFromPauseToPlay = (AnimationDrawable) _playImageView.getBackground();
 
-        _songDuration = _songWrapper.getMediaDuration();
 
-        _handler = new Handler()
+
+        _progressBarHandler = new Handler()
         {
             @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(@NonNull Message msg) {
                 _songCurrentTimeTextView.setText(MusicPlayerUtil.getFormatTimeFromMilliseconds(msg.what));
                 _reproductionBar.setProgress(msg.what);
+            }
+        };
+
+        _changeSongRunnable = new Runnable() {
+            @Override
+            public void run() {
+                _metadata = MetaDataWrapperUtil.MP3FromFile(_songWrapper.getCurrentSongFile());
+                if (_metadata.title.equals(MetaDataWrapperUtil.UNKNOWN_TITLE))
+                    _metadata.title = _songWrapper.getCurrentSongFile().getName();
+                updateInformation(_metadata);
+
             }
         };
 
@@ -152,10 +172,10 @@ public class SongDetailsActivity extends AppCompatActivity
         }
 
         updateInformation(_metadata);
-        updateReproductionBar();
+        startReproductionBarUpdateThread();
     }
 
-    public void updateReproductionBar()
+    public void startReproductionBarUpdateThread()
     {
         new Thread()
         {
@@ -166,14 +186,16 @@ public class SongDetailsActivity extends AppCompatActivity
                 {
                     if(_songWrapper.isPlaying() && !_draggedFromUser)
                     {
-
                         try {
                             Message message = new Message();
                             message.what = _songWrapper.getMediaCurrentPosition();
-                            _handler.sendMessage(message);
+                            _progressBarHandler.sendMessage(message);
                             if(_changeFromUser)
                             {
-                                Thread.sleep(100);
+                                if(_songWrapper.getMediaDuration() < 5000)
+                                    Thread.sleep(100);
+                                else
+                                    Thread.sleep(1000);
                                 _changeFromUser = false;
                             }
 
@@ -199,17 +221,16 @@ public class SongDetailsActivity extends AppCompatActivity
         if(_songNameTextView != null)
             _songNameTextView.setText(metadata.title);
 
+
+
         if(_songCoverImageView != null)
         {
             if(metadata.image == null)
-                if(Build.VERSION.SDK_INT >= 16)
-                    _songCoverImageView.setBackground(getResources().getDrawable(R.drawable.logo1));
-                else
-                    _songCoverImageView.setBackgroundResource(R.drawable.logo1);
+                _songCoverImageView.setImageDrawable(getResources().getDrawable(R.drawable.logo1));
             else
                 _songCoverImageView.setImageBitmap(metadata.image);
         }
-
+        _songDuration = _songWrapper.getMediaDuration();
         _reproductionBar.setMax(_songDuration);
         if(_songLengthTextView != null && _songDuration != -1)
         {
@@ -217,6 +238,14 @@ public class SongDetailsActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onSongChangeAction(SongWrapper sw, File file) {
 
+        if (_changeSongHandler == null)
+            _changeSongHandler = new Handler();
+        else
+            _changeSongHandler.removeCallbacks(_changeSongRunnable);
+        _changeSongHandler.postDelayed(_changeSongRunnable, 100);
+    }
 }
 
