@@ -1,5 +1,6 @@
 package com.example.musicplayer.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,8 +11,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,12 +40,16 @@ public class MainActivity extends AppCompatActivity {
     private SongWrapper _songWrapper;
 	private Intent _songDetailsIntent;
 	private PlayList _playList;
+	private Handler _addSongViewsHandler;
 
-    @Override
+    @SuppressLint("HandlerLeak")
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button btn = findViewById(R.id.btnBuscar);
+
+		_fileViewContainer = findViewById(R.id.songListContainer);
 
         if (Build.VERSION.SDK_INT >= 23)
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
@@ -53,11 +60,28 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                debugFileSearcher();
+                executeFileSearcher();
             }
         });
         _songWrapper = ((MusicApplication) getApplication()).getSongWrapper();
         _playList = ((MusicApplication) getApplication()).getPlayList();
+
+		_addSongViewsHandler = new Handler()
+		{
+			@SuppressLint("HandlerLeak")
+			@Override
+			public void handleMessage(@NonNull Message msg) {
+				tInicio = System.currentTimeMillis();
+				SongFileView[] songFileViews = (SongFileView[]) msg.obj;
+				for(int indexSongView = 0; indexSongView < songFileViews.length; indexSongView++)
+				{
+					_fileViewContainer.addView(songFileViews[indexSongView]);
+				}
+				tFinal = System.currentTimeMillis();
+				tDif = tFinal - tInicio;
+				Log.d("Tiempo", "se demoro en añadiendo las views: " + tDif);
+			}
+		};
 
         _songWrapper.addOnSongChangeActionListener(new SongWrapper.OnSongChangeActionListener() {
 			@Override
@@ -67,24 +91,46 @@ public class MainActivity extends AppCompatActivity {
 		});
     }
 
-    private void debugFileSearcher() {
+	@Override
+	protected void onStart() {
+		Runnable loadSongViewsRunnable = new Runnable() {
+			@Override
+			public void run() {
+				SongFileView[] songFileViews = createFileView(executeFileSearcher());
+				Message message = new Message();
+				message.obj = songFileViews;
+				_addSongViewsHandler.sendMessage(message);
+			}
+		};
+
+		Thread mythread = new Thread(loadSongViewsRunnable);
+		mythread.start();
+		super.onStart();
+	}
+
+	private long tInicio;
+	private long tFinal;
+	private long tDif;
+	private File[] executeFileSearcher() {
+		tInicio = System.currentTimeMillis();
         FileSearcher fileSearcher = new FileSearcher(".mp3", this);
         fileSearcher.findFilesOnPath(fileSearcher.getRootPath());
         File[] files = fileSearcher.getFiles();
         fileSearcher.printFileUtil(files);
-        createFileView(files);
+        tFinal = System.currentTimeMillis();
+        tDif = tFinal - tInicio;
+		Log.d("Tiempo", "se demoro en buscar los archivos: " + tDif);
+        return files;
     }
 
     int indexSong;
     @SuppressLint("ClickableViewAccessibility")
-    private void createFileView(File[] files) {
-        if (_fileViewContainer == null)
-            _fileViewContainer = findViewById(R.id.songListContainer);
+    private SongFileView[] createFileView(File[] files) {
 
-		_fileViewContainer.removeAllViews();
-
-        int length = files.length;
-        for (int fileIndex = 0; fileIndex < length; fileIndex++) {
+		tInicio = System.currentTimeMillis();
+		int length = files.length;
+		SongFileView[] songFileViews = new SongFileView[length];
+		for (int fileIndex = 0; fileIndex < length; fileIndex++) {
 
         	indexSong = fileIndex;
 
@@ -256,9 +302,13 @@ public class MainActivity extends AppCompatActivity {
 
             LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(_fileViewContainer.getWidth(), MusicPlayerUtil.dpToPx(70, this));
             view.setLayoutParams(layout);
-            _fileViewContainer.addView(view);
+            songFileViews[fileIndex] = view;
         }
-    }
+		tFinal = System.currentTimeMillis();
+		tDif = tFinal - tInicio;
+		Log.d("Tiempo", "se demoro en crear las views: " + tDif);
+		return  songFileViews;
+	}
 
 	private void setupViewData(Context context, File songFile, SongFileView view)
 	{

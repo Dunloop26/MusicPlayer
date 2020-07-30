@@ -145,9 +145,6 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
             }
         });
 
-
-
-
         _progressBarHandler = new Handler()
         {
             @SuppressLint("HandlerLeak")
