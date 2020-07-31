@@ -235,7 +235,7 @@ public class SongFileView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+
 
 		_painter.setColor(_backgroundDisplayColor);
 
@@ -250,7 +250,6 @@ public class SongFileView extends View {
 		canvas.drawBitmap(_moreOptionsImage,
 				getWidth() - (_imageMargin * 2) - _moreOptionsImage.getWidth(),
 				(getHeight() / 2) - (_moreOptionsImage.getHeight() / 2), _painter);
-
 
 
 		_painter.setColor(_fontDisplayTitleColor);
@@ -274,8 +273,7 @@ public class SongFileView extends View {
 				(((_imageSize / 4f) + (_imageSize / 2f)) + _imageMargin) + (_imageSize * 0.1f),
 				canvas);
 
-
-
+		super.onDraw(canvas);
 	}
 
 	/**
