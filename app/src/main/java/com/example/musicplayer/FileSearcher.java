@@ -15,8 +15,8 @@ import java.util.List;
 
 public class FileSearcher {
 
-    private List<File> _fileList;
-    private List<String> _ignorePaths;
+    private ArrayList<File> _fileList;
+    private ArrayList<String> _ignorePaths;
     private String _rootPath;
     private String _extension;
     private Context _context;
@@ -142,9 +142,9 @@ public class FileSearcher {
         return _extension;
     }
 
-    public static void printFileUtil(File[] _fileList) {
-        for (int i = 0; i < _fileList.length; i++) {
-            File currentSong = _fileList[i];
+    public static void printFileUtil(ArrayList<File> fileList) {
+        for (int i = 0; i < fileList.size(); i++) {
+            File currentSong = fileList.get(i);
 //            Log.d("Song", "Name: " + currentSong.getName() + ", Path: " + currentSong.getAbsolutePath());
         }
     }
@@ -153,8 +153,8 @@ public class FileSearcher {
         return _rootPath;
     }
 
-    public File[] getFiles()
+    public ArrayList<File> getFiles()
     {
-        return _fileList.toArray(new File[0]);
+        return _fileList;
     }
 }
