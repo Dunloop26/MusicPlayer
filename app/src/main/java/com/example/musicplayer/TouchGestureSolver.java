@@ -1,6 +1,7 @@
 package com.example.musicplayer;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,6 +17,8 @@ public class TouchGestureSolver implements View.OnTouchListener
 	private int xIni;
 	private int yIni;
 
+	private View mView;
+
 	private Handler mHandler;
 	private OnGestureListener _onGestureListener;
 
@@ -23,14 +26,15 @@ public class TouchGestureSolver implements View.OnTouchListener
 	{
 		void onSingleClick(View view);
 
-		void onLongClick();
+		void onLongClick(View view);
 	}
 
 	private  Runnable _mAction = new Runnable() {
 		@Override public void run() {
 			if(!cancelado && presionado)
 			{
-				onLongClick();
+				Log.d("Listenerprueba", "En el runnable");
+				onLongClick(mView);
 			}
 		}
 	};
@@ -56,6 +60,7 @@ public class TouchGestureSolver implements View.OnTouchListener
 				{
 					presionado = true;
 					mHandler = new Handler();
+					mView = v;
 					mHandler.postDelayed(_mAction, 505);
 
 				}
@@ -116,8 +121,9 @@ public class TouchGestureSolver implements View.OnTouchListener
 			_onGestureListener.onSingleClick(view);
 	}
 
-	public void onLongClick(){
+	public void onLongClick(View view){
+		Log.d("Listenerprueba", "en el solver");
 		if(_onGestureListener != null)
-			_onGestureListener.onLongClick();
+			_onGestureListener.onLongClick(view);
 	}
 }

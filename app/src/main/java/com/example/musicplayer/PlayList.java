@@ -61,4 +61,8 @@ public class PlayList {
 		_indexCurrentSong = indexOf(songFile);
 
 	}
+
+	public void setSongList(ArrayList<File> songs) {
+		_songs = songs;
+	}
 }
