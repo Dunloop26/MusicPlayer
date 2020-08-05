@@ -411,5 +411,14 @@ public class SongFileView extends View {
 		return _nameTextSize;
 	}
 
+	public void setTextTitle(String title){
+		_fileDisplayTitle = title;
+		invalidate();
+	}
+
+	public void setImage(){
+
+	}
+
 
 }
