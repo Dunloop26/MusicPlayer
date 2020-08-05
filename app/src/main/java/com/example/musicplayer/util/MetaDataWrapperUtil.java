@@ -43,7 +43,7 @@ public final class MetaDataWrapperUtil {
         if(genreName == null)
             genreName = UNKNOWN_GENRE;
         if(title == null)
-            title = UNKNOWN_TITLE;
+            title = file.getName();
 
         metadataRetriever.release();
 
