@@ -33,17 +33,20 @@
         <TextView
             android:id="@+id/txtName"
             android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
+            android:textColor="@color/colorLightModePrimaryText"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/txtArtist"
             android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:layout_marginBottom="8dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
+            android:textColor="@color/colorLightModeSecundaryText"
+            android:textSize="13sp"
             android:text="TextView" />
 
         <View
