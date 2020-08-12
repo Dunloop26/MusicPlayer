@@ -12,12 +12,12 @@
 
     <ImageView
         android:id="@+id/imgCover"
-        android:layout_width="118dp"
+        android:layout_width="143dp"
         android:layout_height="60dp"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="10dp"
         android:layout_weight="1"
-        android:src="@drawable/logo1"/>
+        android:src="@drawable/logo1" />
 
     <LinearLayout
         android:layout_width="339dp"
@@ -25,25 +25,20 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
         <TextView
             android:id="@+id/txtName"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="9dp"
             android:gravity="center_vertical"
-            android:textColor="@color/colorLightModePrimaryText"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textColor="@color/colorLightModePrimaryText" />
 
         <TextView
             android:id="@+id/txtArtist"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="9dp"
             android:gravity="center_vertical"
             android:textColor="@color/colorLightModeSecundaryText"
             android:textSize="13sp"
@@ -58,13 +53,13 @@
 
     <ImageButton
         android:id="@+id/imgMoreOptions"
-        android:layout_width="108dp"
-        android:layout_height="60dp"
+        android:layout_width="139dp"
+        android:layout_height="29dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:adjustViewBounds="true"
         android:background="@null"
-        android:padding="15.5dp"
+        android:padding="6dp"
+        android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/three_dot" />
 

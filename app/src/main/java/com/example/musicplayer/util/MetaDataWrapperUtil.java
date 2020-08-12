@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadata;
 import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.example.musicplayer.MP3Metadata;
 
@@ -22,7 +23,13 @@ public final class MetaDataWrapperUtil {
     public static MP3Metadata MP3FromFile(File file)
     {
         MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
-        metadataRetriever.setDataSource(file.getAbsolutePath());
+        try {
+            metadataRetriever.setDataSource(file.getAbsolutePath());
+        }
+        catch (Exception e){
+            Log.e("metadataRetrieverError", "File: " + file.getAbsolutePath());
+            Log.e("metadataRetrieverError", e.getMessage());
+        }
 
         String title, artistName, albumName, genreName;
         Bitmap image = null;

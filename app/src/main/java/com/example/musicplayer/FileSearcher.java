@@ -1,8 +1,12 @@
 package com.example.musicplayer;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +32,8 @@ public class FileSearcher {
     public FileSearcher(String extension, Context context) {
         _extension = addDot(extension);
         _context = context;
-        _rootPath = Environment.getExternalStorageDirectory().toString();
+        _rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+//        _rootPath = _context.getExternalFilesDir(null).getAbsolutePath();
         _fileList = new ArrayList<>();
         _ignorePaths = new ArrayList<>();
         readIgnoreFile();
@@ -61,6 +67,7 @@ public class FileSearcher {
     }
 
     private void processCurrentFile(File file, String path) {
+
         if (!file.exists()) {
             Log.d("Error", "FATAL ERROR!");
             return;
@@ -87,7 +94,6 @@ public class FileSearcher {
 
                 String currentFileExtension = getExtensionFromFileName(file.getName());
                 if (currentFileExtension == null) return;
-                //Log.d("Test", "Extension " + currentFileExtension);
                 if (currentFileExtension.equals(_extension)) {
                     _fileList.add(file);
                 }
@@ -97,15 +103,19 @@ public class FileSearcher {
 
     public void findFilesOnPath(String path) {
         File rootDirectory = new File(path);
+
+
         if (!rootDirectory.exists()) {
-            Log.d("Error0", "FATAL ERROR!");
             return;
         }
-
         if (!rootDirectory.isDirectory()) return;
 
-        File[] files = rootDirectory.listFiles();
 
+
+        File[] files = rootDirectory.listFiles();
+        rootDirectory.list();
+
+//        Log.d("files_debug", "Archivos: " + files.length);
         if (files == null) {
             Log.d("Error", "FATAL ERROR!");
             return;
@@ -114,6 +124,7 @@ public class FileSearcher {
         for (int fileListIndex = 0; fileListIndex < files.length; fileListIndex++) {
             File currentFile = files[fileListIndex];
             // Analizo si el archivo actual coincide con los parámetros y lo agrego a la lista
+//            Log.d("files_debug", "Analizando: " + currentFile);
             processCurrentFile(currentFile, path);
         }
     }
