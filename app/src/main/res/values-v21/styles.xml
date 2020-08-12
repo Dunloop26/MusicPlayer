@@ -7,4 +7,10 @@
         <item name="colorPrimaryDark">@color/colorDarkModeBackground</item>
         <item name="android:navigationBarColor">@color/colorLightModeBackground</item>
     </style>
+
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

@@ -6,18 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".activities.TestActivity">
 
-    <com.example.musicplayer.views.SongFileView
-        android:layout_width="360dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="20dp"
-        app:artistAlbumNameTextSize="15sp"
-        app:nameTextSize="17sp" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/three_dot" />
+    <TextView
+        android:text="This is an example"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 
 </RelativeLayout>

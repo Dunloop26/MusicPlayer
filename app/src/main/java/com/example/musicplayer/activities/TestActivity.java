@@ -16,9 +16,5 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-
-        ImageView image = (ImageView) findViewById(R.id.imageView);
-        int newColor = getResources().getColor(R.color.colorLightModePrimaryText);
-        image.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
     }
 }

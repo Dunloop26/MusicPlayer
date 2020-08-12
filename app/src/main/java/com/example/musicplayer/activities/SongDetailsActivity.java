@@ -51,11 +51,6 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
     private Runnable _changeSongRunnable;
 
-//    private AnimationDrawable _animationFromPauseToPlay;
-//    private AnimationDrawable _animationFromPlayToPause;
-//    private AnimationDrawable _animationPrev;
-//    private AnimationDrawable _animationNext;
-
     private int _songDuration;
     private boolean _fromPauseToPlay;
     private boolean _draggedFromUser;
@@ -218,6 +213,7 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
     public void startReproductionBarUpdateThread()
     {
+        //TODO Cambiar el hilo y optimizarlo
         new Thread()
         {
             @Override
@@ -261,8 +257,6 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
         if(_songNameTextView != null)
             _songNameTextView.setText(metadata.title);
-
-
 
         if(_songCoverImageView != null)
         {
