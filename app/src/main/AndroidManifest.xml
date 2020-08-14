@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+
         android:name=".MusicApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,6 +16,9 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
+
+
+
         <activity android:name=".activities.SongOptionsActivity"
             android:theme="@style/AppTheme.SongOptionsTheme">
         </activity>
@@ -28,6 +32,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.SongDetailsActivity"></activity>
+<!--        &lt;!&ndash; Don't change this name after publish it&ndash;&gt;-->
+<!--        <service android:name=".SongService"-->
+<!--            android:exported="false"/>-->
     </application>
+
 
 </manifest>

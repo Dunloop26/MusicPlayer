@@ -1,8 +1,9 @@
 package com.example.musicplayer.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.musicplayer.MP3Metadata;
+import com.example.musicplayer.models.MP3Metadata;
 import com.example.musicplayer.PlayList;
 import com.example.musicplayer.util.MetaDataWrapperUtil;
 import com.example.musicplayer.MusicApplication;
@@ -246,12 +247,24 @@ public class SongDetailsActivity extends AppCompatActivity implements SongWrappe
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+	@Override
+	protected void onStart() {
+        Log.d("Notificacion", "Deberia crearla");
+		Notification.Builder builder = new Notification.Builder(SongDetailsActivity.this);
+		builder.setSmallIcon(R.mipmap.ic_launcher)
+				.setContentText("Call Recorder")
+				.setAutoCancel(false);
+		Notification notification = builder.getNotification();
 
-    private void updateInformation(MP3Metadata metadata)
+		notification.flags |= Notification.FLAG_NO_CLEAR
+				| Notification.FLAG_ONGOING_EVENT;
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		notificationManager.notify(1, notification);
+		super.onStart();
+	}
+
+	private void updateInformation(MP3Metadata metadata)
     {
         if(_songWrapper == null || metadata == null) return;
 

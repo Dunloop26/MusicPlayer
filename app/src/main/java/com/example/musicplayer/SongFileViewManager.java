@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,8 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.musicplayer.activities.MainActivity;
 import com.example.musicplayer.activities.SongOptionsActivity;
+import com.example.musicplayer.models.MP3Metadata;
 import com.example.musicplayer.util.MetaDataWrapperUtil;
 import com.example.musicplayer.util.MusicPlayerUtil;
 import com.example.musicplayer.views.SongFileView;

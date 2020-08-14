@@ -1,6 +1,7 @@
 package com.example.musicplayer;
 
 import android.app.Application;
+import android.app.Notification;
 
 public class MusicApplication extends Application {
 

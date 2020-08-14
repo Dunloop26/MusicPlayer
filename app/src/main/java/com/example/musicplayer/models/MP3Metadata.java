@@ -1,7 +1,6 @@
-package com.example.musicplayer;
+package com.example.musicplayer.models;
 
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
