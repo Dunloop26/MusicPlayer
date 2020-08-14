@@ -24,14 +24,12 @@ public class FileSearcher {
     private ArrayList<String> _ignorePaths;
     private String _rootPath;
     private String _extension;
-    private Context _context;
 
     /**
      * @param extension Referencia a la extension del archivo
      */
-    public FileSearcher(String extension, Context context) {
+    public FileSearcher(String extension) {
         _extension = addDot(extension);
-        _context = context;
         _rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 //        _rootPath = _context.getExternalFilesDir(null).getAbsolutePath();
         _fileList = new ArrayList<>();
@@ -41,7 +39,7 @@ public class FileSearcher {
 
     private void readIgnoreFile()
     {
-        InputStream inputStream = _context.getResources().openRawResource(R.raw.ignore);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("res/raw/ignore.txt");
         try {
 
             Reader in = new InputStreamReader(inputStream);
