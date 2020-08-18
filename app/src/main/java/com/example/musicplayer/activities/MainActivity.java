@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +25,7 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.example.musicplayer.FileSearcher;
+import com.example.musicplayer.MusicNotification;
 import com.example.musicplayer.models.MP3Metadata;
 import com.example.musicplayer.PlayList;
 import com.example.musicplayer.adapters.SongViewAdapter;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements SongViewAdapter.O
 	private Intent mSongDetailsIntent;
 	private Intent mSongOptionsIntent;
 	private PlayList mPlayList;
+
+	private NotificationManager mNotificationManager;
 
 	private MainActivityViewModel mMainActivityViewModel;
 
@@ -95,7 +100,21 @@ public class MainActivity extends AppCompatActivity implements SongViewAdapter.O
 			initRecyclerView();
 
 		mPlayList.setSongList(mMainActivityViewModel.getFiles());
-    }
+		if(Build.VERSION.SDK_INT >= 26) {
+			createNotificationChannel();
+		}
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public void createNotificationChannel() {
+		NotificationChannel channel = new NotificationChannel(MusicNotification.CHANNEL_ID,
+				"Music", NotificationManager.IMPORTANCE_LOW);
+
+		mNotificationManager = getSystemService(NotificationManager.class);
+		if(mNotificationManager != null) {
+			mNotificationManager.createNotificationChannel(channel);
+		}
+	}
 
     @RequiresApi(api = Build.VERSION_CODES.M)
 	private void requestPermissions() {
@@ -160,9 +179,13 @@ public class MainActivity extends AppCompatActivity implements SongViewAdapter.O
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 	private void onPlaySong(File file) {
 		if (mSongWrapper == null) return;
+//		mSongWrapper.initMediaPlayer(this);
 		mSongWrapper.play(file);
 		mPlayList.setIndexFromSong(file);
 		MP3Metadata metadata = MetaDataWrapperUtil.MP3FromFile(file);
+
+		MusicNotification.createNotification(this, metadata,
+				R.drawable.ic_pause, R.drawable.ic_shuffle, R.drawable.ic_favorite);
 
 
 		Bundle options = new Bundle();
@@ -198,6 +221,12 @@ public class MainActivity extends AppCompatActivity implements SongViewAdapter.O
 		getMenuInflater().inflate(R.menu.toolbar_widgets, menu);
 		getSupportActionBar().setTitle("");
 		return true;
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mNotificationManager.cancelAll();
 	}
 }
 
