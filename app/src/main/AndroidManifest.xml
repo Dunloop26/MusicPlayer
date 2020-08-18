@@ -31,10 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SongDetailsActivity"></activity>
-<!--        &lt;!&ndash; Don't change this name after publish it&ndash;&gt;-->
-<!--        <service android:name=".SongService"-->
-<!--            android:exported="false"/>-->
+        <activity android:name=".activities.SongDetailsActivity"
+            android:parentActivityName=".activities.MainActivity"></activity>
+        <!-- Don't change this name after publish it-->
+        <service android:name=".SongService"/>
+        <receiver android:name=".NotificationActionService"/>
     </application>
 
 
