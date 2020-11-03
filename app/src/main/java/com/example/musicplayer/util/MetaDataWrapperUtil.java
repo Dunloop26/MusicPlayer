@@ -24,7 +24,10 @@ public final class MetaDataWrapperUtil {
             metadataRetriever.setDataSource(file.getAbsolutePath());
         }
         catch (Exception e){
-            Log.e("metadataRetrieverError", "File: " + file.getAbsolutePath());
+            if(file != null)
+            {
+                Log.e("metadataRetrieverError", "File: " + file.getAbsolutePath());
+            }
             Log.e("metadataRetrieverError", e.getMessage());
         }
 
